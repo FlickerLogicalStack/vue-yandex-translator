@@ -1,12 +1,12 @@
 {
     "compilerOptions": {
-        "target": "es2018",
+        "target": "es2015",
         "allowSyntheticDefaultImports": false,
         "experimentalDecorators": true,
         "baseUrl": "./",
         "paths": {
-            "@/*": [
-                "src/*"
+            "@": [
+                "src/components"
             ],
         }
     },
@@ -14,7 +14,4 @@
         "node_modules",
         "dist"
     ],
-    "eslint.options": {
-        "configFile": "./.eslintrc.json"
-    }
 }
