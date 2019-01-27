@@ -22,6 +22,8 @@ module.exports = {
         semi: [
             'warn',
             'always'
-        ]
+        ],
+        'space-before-function-paren': 0,
+        curly: 0
     }
 };
