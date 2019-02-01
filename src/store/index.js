@@ -11,7 +11,9 @@ import {
     ADD_TRANSLATION,
     SET_AVALIABLE_LANGUAGES,
     INCREMENT_CURRENT_TRANSLATION_ID,
-    SET_LOADING_STATE
+    SET_LOADING_STATE,
+    TRANSLATE_ACTION,
+    SWAP_LANGUAGES_ACTION
 } from './types';
 
 import { DictionaryProcessor, BasicProcessor } from '@/processors';
@@ -24,7 +26,6 @@ export default new Vuex.Store({
         loadingState: {
             loading: false
         },
-
         input: '',
         processors: [new DictionaryProcessor(), new BasicProcessor()],
         history: [],
@@ -82,7 +83,7 @@ export default new Vuex.Store({
         }
     },
     actions: {
-        translate({ state, commit, getters }, { text, lang }) {
+        [TRANSLATE_ACTION]({ state, commit, getters }, { text, lang }) {
             commit(INCREMENT_CURRENT_TRANSLATION_ID);
             commit(SET_LOADING_STATE, true);
 
@@ -100,6 +101,20 @@ export default new Vuex.Store({
                         }
                     })
                     .catch(console.warn);
+            });
+        },
+        [SWAP_LANGUAGES_ACTION]({ state, commit }) {
+            const reversedCurrentLanguages = JSON.parse(
+                JSON.stringify(
+                    state.languages.map(language => language.languageId)
+                )
+            ).reverse();
+
+            state.languages.forEach((language, index) => {
+                commit(SET_LANGUAGE_BY_CONTROLLER_ID, {
+                    controlerId: language.controlerId,
+                    languageId: reversedCurrentLanguages[index]
+                });
             });
         }
     },

@@ -8,7 +8,7 @@ class TranslationProcessor {
     }
 
     toOutput(translation) {
-        return '';
+        return JSON.stringify(translation, null, 4);
     }
 
     translate(text, lang) {
@@ -25,10 +25,6 @@ export class DictionaryProcessor extends TranslationProcessor {
         super(DICTIONARY, 10);
     }
 
-    toOutput(translation) {
-        return `LOOKUP (${translation.translationId})`;
-    }
-
     translate(text, lang) {
         return fetchDictionaryTranslation({ text, lang });
     }
@@ -41,10 +37,6 @@ export class DictionaryProcessor extends TranslationProcessor {
 export class BasicProcessor extends TranslationProcessor {
     constructor() {
         super(BASIC, 5);
-    }
-
-    toOutput(translation) {
-        return 'TRANSLATION';
     }
 
     translate(text, lang) {
