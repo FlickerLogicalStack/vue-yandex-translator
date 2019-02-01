@@ -1,4 +1,5 @@
 import { BASIC, DICTIONARY } from '@/consts.js';
+import { fetchDictionaryTranslation, fetchBasicTranslation } from '@/api';
 
 class TranslationProcessor {
     constructor(id, priority) {
@@ -9,6 +10,14 @@ class TranslationProcessor {
     toOutput(translation) {
         return '';
     }
+
+    translate(text, lang) {
+        return new Promise((resolve, reject) => {});
+    }
+
+    isValid(response) {
+        return false;
+    }
 }
 
 export class DictionaryProcessor extends TranslationProcessor {
@@ -17,7 +26,15 @@ export class DictionaryProcessor extends TranslationProcessor {
     }
 
     toOutput(translation) {
-        return 'LOOKUP';
+        return `LOOKUP (${translation.translationId})`;
+    }
+
+    translate(text, lang) {
+        return fetchDictionaryTranslation({ text, lang });
+    }
+
+    isValid({ output }) {
+        return output.def && output.def.length;
     }
 }
 
@@ -28,5 +45,13 @@ export class BasicProcessor extends TranslationProcessor {
 
     toOutput(translation) {
         return 'TRANSLATION';
+    }
+
+    translate(text, lang) {
+        return fetchBasicTranslation({ text, lang });
+    }
+
+    isValid({ output }) {
+        return output.text && output.text.length;
     }
 }

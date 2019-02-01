@@ -9,11 +9,11 @@ import {
     TRANSLATER_ENDPOINT
 } from '@/consts.js';
 
-const apiCall = ({ url, fetchParams, text, lang, translationType }) => {
+const apiCall = ({ url, fetchParams, text, lang, translationTypeId }) => {
     return fetch(url)
         .then(response => response.json())
         .then(json => ({
-            translationType,
+            translationTypeId,
             lang,
             input: text,
             output: json
@@ -25,7 +25,7 @@ export const fetchDictionaryTranslation = ({ text, lang }) => {
 
     return apiCall({
         url: `${DICTIONARY_ENDPOINT}?${createParams(requestParams)}`,
-        translationType: DICTIONARY,
+        translationTypeId: DICTIONARY,
         text,
         lang
     });
@@ -45,7 +45,7 @@ export const fetchBasicTranslation = ({ text, lang }) => {
             method: 'POST',
             body: formData
         },
-        translationType: BASIC,
+        translationTypeId: BASIC,
         text,
         lang
     });
