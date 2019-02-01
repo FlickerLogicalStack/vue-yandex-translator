@@ -13,10 +13,12 @@ import {
     INCREMENT_CURRENT_TRANSLATION_ID,
     SET_LOADING_STATE,
     TRANSLATE_ACTION,
-    SWAP_LANGUAGES_ACTION
+    SWAP_LANGUAGES_ACTION,
+    GET_AVALIABLE_LANGUAGES_ACTION
 } from './types';
 
 import { DictionaryProcessor, BasicProcessor } from '@/processors';
+import { fetchAvaliableLanguages } from '@/api';
 
 Vue.use(Vuex);
 
@@ -31,11 +33,11 @@ export default new Vuex.Store({
         history: [],
         languages: [
             {
-                controlerId: FROM_LANGUAGE_CONTROLLER_ID,
+                controllerId: FROM_LANGUAGE_CONTROLLER_ID,
                 languageId: 'ru'
             },
             {
-                controlerId: TO_LANGUAGE_CONTROLLER_ID,
+                controllerId: TO_LANGUAGE_CONTROLLER_ID,
                 languageId: 'en'
             }
         ],
@@ -55,9 +57,9 @@ export default new Vuex.Store({
             state.input = value;
         },
 
-        [SET_LANGUAGE_BY_CONTROLLER_ID](state, { controlerId, languageId }) {
+        [SET_LANGUAGE_BY_CONTROLLER_ID](state, { controllerId, languageId }) {
             const languageForMutation = state.languages.find(
-                language => language.controlerId === controlerId
+                language => language.controllerId === controllerId
             );
 
             languageForMutation.languageId = languageId;
@@ -70,7 +72,7 @@ export default new Vuex.Store({
             });
         },
 
-        [SET_AVALIABLE_LANGUAGES](state, { languages }) {
+        [SET_AVALIABLE_LANGUAGES](state, languages) {
             state.avaliableLanguages = languages;
         },
 
@@ -112,9 +114,24 @@ export default new Vuex.Store({
 
             state.languages.forEach((language, index) => {
                 commit(SET_LANGUAGE_BY_CONTROLLER_ID, {
-                    controlerId: language.controlerId,
+                    controllerId: language.controllerId,
                     languageId: reversedCurrentLanguages[index]
                 });
+            });
+        },
+        [GET_AVALIABLE_LANGUAGES_ACTION]({ state, commit }) {
+            fetchAvaliableLanguages().then(({ langs }) => {
+                const languagesAsStrings = Object.entries(langs)
+                    .map(([id, title]) => `${title}-${id}`)
+                    .sort();
+
+                commit(
+                    SET_AVALIABLE_LANGUAGES,
+                    languagesAsStrings.map(lang => ({
+                        languageId: lang.split('-')[1],
+                        title: lang.split('-')[0]
+                    }))
+                );
             });
         }
     },

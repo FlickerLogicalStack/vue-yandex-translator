@@ -32,12 +32,55 @@
         <textarea
             class="textarea input"
             @keydown.enter.exact.prevent
-            @keyup.enter.exact="loadData"
+            @keyup.enter.exact="translate"
             @input="onInput"
             v-model="$store.state.input"
+            autofocus
         ></textarea>
-        <h1></h1>
-        <Loader v-if="$store.state.loadingState.loading"/>
+        <div class="controllers">
+            <div class="language-controller">
+                <div class="selected">
+                    {{ languageTitleByControllerId('FROM') }}
+                </div>
+                <div class="list">
+                    <div
+                        class="language"
+                        v-for="language in $store.state.avaliableLanguages"
+                        @click="onLanguageCLick('FROM', language)"
+                    >
+                        {{ language.title }}
+                    </div>
+                </div>
+            </div>
+            <div
+                class="translate-button"
+                :class="{ disabled: !$store.state.input || $store.state.loadingState.loading }"
+                @click="translate"
+            >
+                <svg viewBox="0 0 448 512">
+                    <path
+                        fill="currentColor"
+                        d="M448 360V24c0-13.3-10.7-24-24-24H96C43 0 0 43 0 96v320c0 53 43 96 96 96h328c13.3 0 24-10.7 24-24v-16c0-7.5-3.5-14.3-8.9-18.7-4.2-15.4-4.2-59.3 0-74.7 5.4-4.3 8.9-11.1 8.9-18.6zM128 134c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm0 64c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm253.4 250H96c-17.7 0-32-14.3-32-32 0-17.6 14.4-32 32-32h285.4c-1.9 17.1-1.9 46.9 0 64z"
+                    ></path>
+                </svg>
+                Translate
+            </div>
+            <div class="language-controller">
+                <div class="selected">
+                    {{ languageTitleByControllerId('TO') }}
+                </div>
+                <div class="list">
+                    <div
+                        class="language"
+                        v-for="language in $store.state.avaliableLanguages"
+                        @click="onLanguageCLick('TO', language)"
+                    >
+                        {{ language.title }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <Loader v-if="$store.state.loadingState.loading"></Loader>
         <textarea
             v-else
             class="textarea output"
@@ -51,45 +94,67 @@
 </template>
 
 <script>
-import {
-    SET_INPUT,
-    INCREMENT_CURRENT_TRANSLATION_ID,
-    TRANSLATE_ACTION,
-    SWAP_LANGUAGES_ACTION
-} from '@/store/types';
+    import {
+        SET_INPUT,
+        INCREMENT_CURRENT_TRANSLATION_ID,
+        TRANSLATE_ACTION,
+        SWAP_LANGUAGES_ACTION,
+        SET_LANGUAGE_BY_CONTROLLER_ID,
+        GET_AVALIABLE_LANGUAGES_ACTION
+    } from '@/store/types';
 
-import Loader from '@/components/Loader';
+    import Loader from '@/components/Loader';
 
-// TODO: MapState
-export default {
-    name: 'translation-wrapper',
-    components: { Loader },
-    methods: {
-        loadData() {
-            this.$store.dispatch(TRANSLATE_ACTION, {
-                text: this.$store.state.input,
-                lang: this.languages
-            });
+    // TODO: MapState
+    export default {
+        name: 'translation-wrapper',
+        components: { Loader },
+        methods: {
+            translate() {
+                this.$store.dispatch(TRANSLATE_ACTION, {
+                    text: this.$store.state.input,
+                    lang: this.languages
+                });
+            },
+            onInput({ target }) {
+                this.$store.commit(SET_INPUT, { value: target.value });
+
+                target.style.height = 'auto';
+                target.style.height = `${target.scrollHeight}px`;
+            },
+            onClearClick() {
+                this.$store.commit(SET_INPUT, { value: '' });
+                this.$store.commit(INCREMENT_CURRENT_TRANSLATION_ID);
+            },
+            onSwapClick() {
+                this.$store.dispatch(SWAP_LANGUAGES_ACTION);
+            },
+            languageTitleByControllerId(controllerId) {
+                const languageId = this.$store.state.languages.find(
+                    language => language.controllerId === controllerId
+                ).languageId;
+                return this.$store.state.avaliableLanguages.find(
+                    language => language.languageId === languageId
+                ).title;
+            },
+            onLanguageCLick(controllerId, language) {
+                this.$store.commit(SET_LANGUAGE_BY_CONTROLLER_ID, {
+                    controllerId,
+                    languageId: language.languageId
+                });
+            }
         },
-        onInput({ target }) {
-            this.$store.commit(SET_INPUT, { value: target.value });
+        computed: {
+            languages() {
+                return this.$store.state.languages
+                    .map(language => language.languageId)
+                    .join('-');
+            }
         },
-        onClearClick() {
-            this.$store.commit(SET_INPUT, { value: '' });
-            this.$store.commit(INCREMENT_CURRENT_TRANSLATION_ID);
-        },
-        onSwapClick() {
-            this.$store.dispatch(SWAP_LANGUAGES_ACTION);
+        mounted() {
+            this.$store.dispatch(GET_AVALIABLE_LANGUAGES_ACTION);
         }
-    },
-    computed: {
-        languages() {
-            return this.$store.state.languages
-                .map(language => language.languageId)
-                .join('-');
-        }
-    }
-};
+    };
 </script>
 
 <style>
@@ -98,6 +163,8 @@ export default {
     }
 
     :root {
+        --default-transition-time: 0.2s;
+
         --background-color: #282c34;
         --font-color: #abb2bf;
 
@@ -121,7 +188,6 @@ export default {
 
         box-sizing: border-box;
         width: 270px;
-        min-height: 430px;
         padding: 10px;
 
         color: var(--font-color);
@@ -137,7 +203,7 @@ export default {
     }
 
     .action {
-        transition: 0.2s;
+        transition: var(--default-transition-time);
     }
 
     .action.disabled {
@@ -155,7 +221,7 @@ export default {
 
         cursor: pointer;
         user-select: none;
-        transition: 0.2s;
+        transition: var(--default-transition-time);
 
         align-items: center;
     }
@@ -184,7 +250,7 @@ export default {
         padding: 5px;
 
         resize: none;
-        transition: background-color 0.2s;
+        transition: var(--default-transition-time);
 
         color: inherit;
         border: none;
@@ -193,13 +259,150 @@ export default {
         background-color: var(--dark-grey);
     }
 
+    .textarea.input {
+        max-height: 10em;
+    }
+
     .textarea.output {
-        flex-grow: 1;
+        height: 240px;
     }
 
     .textarea:focus,
     .textarea:hover:not(.output) {
         background-color: var(--medium-grey);
+    }
+
+    .controllers {
+        display: flex;
+
+        box-sizing: border-box;
+        width: 100%;
+        height: 40px;
+        padding: 5px 0;
+
+        align-items: center;
+        justify-content: center;
+    }
+
+    .language-controller {
+        position: relative;
+
+        box-sizing: border-box;
+        width: 70px;
+        height: 100%;
+
+        cursor: pointer;
+        user-select: none;
+
+        background-color: var(--dark-grey);
+
+        flex-grow: 0;
+    }
+
+    .language-controller:hover > .selected {
+        border-top: 1px solid var(--medium-grey);
+        border-right: 1px solid var(--medium-grey);
+        border-bottom: 1px solid var(--dark-grey);
+        border-left: 1px solid var(--medium-grey);
+    }
+
+    .selected {
+        font-size: 14px;
+
+        position: relative;
+        z-index: 5;
+
+        display: flex;
+
+        box-sizing: border-box;
+        height: 100%;
+
+        transition: var(--default-transition-time);
+
+        border: 1px solid transparent;
+
+        align-items: center;
+        justify-content: center;
+    }
+
+    .list {
+        position: absolute;
+        z-index: 4;
+        top: calc(100% - 1px);
+
+        overflow: hidden;
+        overflow-y: auto;
+
+        box-sizing: border-box;
+        width: calc(100% + 40px);
+        max-height: 0;
+
+        transition: var(--default-transition-time);
+
+        border: 0 solid transparent;
+        background-color: var(--dark-grey);
+    }
+
+    .language-controller:nth-child(1) .list {
+        left: 0;
+    }
+
+    .language-controller:nth-child(3) .list {
+        right: 0;
+    }
+
+    .language-controller:hover > .list {
+        max-height: 200px;
+
+        border-width: 1px;
+        border-color: var(--medium-grey);
+    }
+
+    .language {
+        box-sizing: border-box;
+        padding: 5px;
+
+        transition: var(--default-transition-time);
+        text-align: center;
+    }
+
+    .language:hover {
+        background-color: var(--medium-grey);
+    }
+
+    .translate-button {
+        display: flex;
+
+        height: 100%;
+        margin: 0 10px;
+        padding: 0 10px;
+
+        cursor: pointer;
+        user-select: none;
+        transition: var(--default-transition-time);
+
+        color: inherit;
+        background-color: var(--dark-grey);
+
+        flex-grow: 1;
+        align-items: center;
+    }
+
+    .translate-button.disabled {
+        pointer-events: none;
+
+        opacity: 0.75;
+    }
+
+    .translate-button:hover {
+        color: var(--light-grey);
+        background-color: var(--medium-grey);
+    }
+
+    .translate-button > svg {
+        width: 15px;
+        height: 15px;
+        margin-right: 5px;
     }
 
     .powered-by-link {

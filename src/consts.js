@@ -10,7 +10,7 @@ export const DICTIONARY_ENDPOINT =
     'https://dictionary.yandex.net/api/v1/dicservice.json/lookup';
 export const TRANSLATER_ENDPOINT =
     'https://translate.yandex.net/api/v1.5/tr.json/translate';
-export const GET_LANGUAGES_ENDPOINT =
+export const AVALIABLE_LANGUAGES_ENDPOINT =
     'https://translate.yandex.net/api/v1.5/tr.json/getLangs';
 
 export const DICTIONARY = 'DICTIONARY';
