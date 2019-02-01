@@ -37,7 +37,9 @@
             v-model="$store.state.input"
         ></textarea>
         <h1></h1>
+        <Loader v-if="$store.state.loadingState.loading"/>
         <textarea
+            v-else
             class="textarea output"
             disabled
             v-model="$store.getters.currentTranslationOutput"
@@ -49,41 +51,45 @@
 </template>
 
 <script>
-    import {
-        SET_INPUT,
-        INCREMENT_CURRENT_TRANSLATION_ID,
-        TRANSLATE_ACTION,
-        SWAP_LANGUAGES_ACTION
-    } from '@/store/types';
+import {
+    SET_INPUT,
+    INCREMENT_CURRENT_TRANSLATION_ID,
+    TRANSLATE_ACTION,
+    SWAP_LANGUAGES_ACTION
+} from '@/store/types';
 
-    export default {
-        name: 'translation-wrapper',
-        methods: {
-            loadData() {
-                this.$store.dispatch(TRANSLATE_ACTION, {
-                    text: this.$store.state.input,
-                    lang: this.languages
-                });
-            },
-            onInput({ target }) {
-                this.$store.commit(SET_INPUT, { value: target.value });
-            },
-            onClearClick() {
-                this.$store.commit(SET_INPUT, { value: '' });
-                this.$store.commit(INCREMENT_CURRENT_TRANSLATION_ID);
-            },
-            onSwapClick() {
-                this.$store.dispatch(SWAP_LANGUAGES_ACTION);
-            }
+import Loader from '@/components/Loader';
+
+// TODO: MapState
+export default {
+    name: 'translation-wrapper',
+    components: { Loader },
+    methods: {
+        loadData() {
+            this.$store.dispatch(TRANSLATE_ACTION, {
+                text: this.$store.state.input,
+                lang: this.languages
+            });
         },
-        computed: {
-            languages() {
-                return this.$store.state.languages
-                    .map(language => language.languageId)
-                    .join('-');
-            }
+        onInput({ target }) {
+            this.$store.commit(SET_INPUT, { value: target.value });
+        },
+        onClearClick() {
+            this.$store.commit(SET_INPUT, { value: '' });
+            this.$store.commit(INCREMENT_CURRENT_TRANSLATION_ID);
+        },
+        onSwapClick() {
+            this.$store.dispatch(SWAP_LANGUAGES_ACTION);
         }
-    };
+    },
+    computed: {
+        languages() {
+            return this.$store.state.languages
+                .map(language => language.languageId)
+                .join('-');
+        }
+    }
+};
 </script>
 
 <style>
@@ -98,26 +104,35 @@
         --dark-grey: #333842;
         --medium-grey: #3f4550;
         --light-grey: #d7dae0;
+
+        --block-color1: var(--dark-grey);
+        --block-color2: var(--medium-grey);
+        --block-color3: var(--font-color);
+        --block-color4: var(--light-grey);
     }
 </style>
 
 <style scoped>
     .translation-wrapper-component {
-        min-height: 430px;
         font-family: 'PT Sans', sans-serif;
 
-        background-color: var(--background-color);
-        color: var(--font-color);
-        width: 270px;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        padding: 10px;
+
         box-sizing: border-box;
+        width: 270px;
+        min-height: 430px;
+        padding: 10px;
+
+        color: var(--font-color);
+        background-color: var(--background-color);
+
+        align-items: center;
     }
 
     .actions {
         display: flex;
+
         padding: 5px;
     }
 
@@ -127,24 +142,30 @@
 
     .action.disabled {
         pointer-events: none;
+
         opacity: 0.75;
     }
 
     .action-button {
-        display: flex;
-        align-items: center;
-        cursor: pointer;
         font-size: 13px;
+
+        display: flex;
+
         padding: 5px 15px;
-        transition: 0.2s;
+
+        cursor: pointer;
         user-select: none;
+        transition: 0.2s;
+
+        align-items: center;
     }
 
     .action-button > svg {
-        fill: currentColor;
         width: 13px;
         height: 13px;
         margin-right: 5px;
+
+        fill: currentColor;
     }
 
     .action-button:hover {
@@ -154,20 +175,22 @@
 
     .textarea {
         font-family: inherit;
-        outline: none;
-        background-color: inherit;
-        color: inherit;
-        resize: none;
-        width: 100%;
-        max-height: 230px;
-        min-height: 80px;
         font-size: 14px;
+
         box-sizing: border-box;
-        border: none;
-        background-color: var(--dark-grey);
+        width: 100%;
+        min-height: 80px;
+        max-height: 230px;
         padding: 5px;
 
+        resize: none;
         transition: background-color 0.2s;
+
+        color: inherit;
+        border: none;
+        outline: none;
+        background-color: inherit;
+        background-color: var(--dark-grey);
     }
 
     .textarea.output {
@@ -180,10 +203,14 @@
     }
 
     .powered-by-link {
-        text-decoration: none;
-        align-self: flex-end;
-        margin-top: 5px;
         font-size: 10px;
+
+        margin-top: 5px;
+
+        text-decoration: none;
+
         color: inherit;
+
+        align-self: flex-end;
     }
 </style>

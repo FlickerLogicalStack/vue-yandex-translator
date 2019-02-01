@@ -10,7 +10,7 @@ import {
 } from '@/consts.js';
 
 const apiCall = ({ url, fetchParams, text, lang, translationTypeId }) => {
-    return fetch(url)
+    return fetch(url, fetchParams)
         .then(response => response.json())
         .then(json => ({
             translationTypeId,
@@ -32,18 +32,17 @@ export const fetchDictionaryTranslation = ({ text, lang }) => {
 };
 
 export const fetchBasicTranslation = ({ text, lang }) => {
-    const formData = new FormData();
     const requestParams = { key: TRANSLATER_API_KEY, text, lang };
-
-    Object.entries(requestParams).forEach(([key, value]) =>
-        formData.append(key, value)
-    );
 
     return apiCall({
         url: TRANSLATER_ENDPOINT,
         fetchParams: {
             method: 'POST',
-            body: formData
+            body: createParams(requestParams),
+            headers: {
+                'Content-Type':
+                    'application/x-www-form-urlencoded;charset=UTF-8'
+            }
         },
         translationTypeId: BASIC,
         text,
