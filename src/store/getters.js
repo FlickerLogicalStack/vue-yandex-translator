@@ -45,5 +45,13 @@ export default {
         );
     },
     lang: state =>
-        state.languages.map(language => language.languageId).join('-')
+        state.languages.map(language => language.languageId).join('-'),
+
+    isTranslationRequired: (state, getters) => {
+        return !!(
+            state.input &&
+            !state.loadingState.loading &&
+            !getters.alreadyTranslated.length
+        );
+    }
 };

@@ -8,7 +8,7 @@ import {
 } from './types';
 
 export default {
-    [SET_INPUT](state, { value }) {
+    [SET_INPUT](state, value) {
         state.input = value;
     },
 
