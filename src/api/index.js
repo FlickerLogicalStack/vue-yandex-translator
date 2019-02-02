@@ -1,8 +1,6 @@
 import { createParams } from '@/utils';
 
 import {
-    BASIC,
-    DICTIONARY,
     DICTIONARY_API_KEY,
     TRANSLATER_API_KEY,
     DICTIONARY_ENDPOINT,
@@ -10,11 +8,10 @@ import {
     AVALIABLE_LANGUAGES_ENDPOINT
 } from '@/consts.js';
 
-const apiCall = ({ url, fetchParams, text, lang, translationTypeId }) => {
+const apiCall = ({ url, fetchParams, text, lang }) => {
     return fetch(url, fetchParams)
         .then(response => response.json())
         .then(json => ({
-            translationTypeId,
             lang,
             input: text,
             output: json
@@ -22,11 +19,15 @@ const apiCall = ({ url, fetchParams, text, lang, translationTypeId }) => {
 };
 
 export const fetchDictionaryTranslation = ({ text, lang }) => {
-    const requestParams = { key: DICTIONARY_API_KEY, text, lang };
+    const requestParams = {
+        key: DICTIONARY_API_KEY,
+        text,
+        lang,
+        ui: lang.split('-')[0]
+    };
 
     return apiCall({
         url: `${DICTIONARY_ENDPOINT}?${createParams(requestParams)}`,
-        translationTypeId: DICTIONARY,
         text,
         lang
     });
@@ -45,7 +46,6 @@ export const fetchBasicTranslation = ({ text, lang }) => {
                     'application/x-www-form-urlencoded;charset=UTF-8'
             }
         },
-        translationTypeId: BASIC,
         text,
         lang
     });

@@ -15,3 +15,5 @@ export const AVALIABLE_LANGUAGES_ENDPOINT =
 
 export const DICTIONARY = 'DICTIONARY';
 export const BASIC = 'BASIC';
+
+export const VUEX_PERSISTEDSTATE_KEY = 'vuex';

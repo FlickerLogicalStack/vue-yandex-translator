@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
     <TranslationWrapper/>
   </div>
 </template>

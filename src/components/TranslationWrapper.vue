@@ -14,9 +14,7 @@
             <div
                 class="action"
                 id="clear"
-                :class="{
-                    disabled: !$store.state.input && !$store.getters.currentTranslationOutput
-                }"
+                :class="{ disabled: !$store.state.input && !$store.getters.currentTranslationOutput }"
                 @click="onClearClick"
             >
                 <div class="action-button">
@@ -28,11 +26,25 @@
                     <div class="action-title">Clear</div>
                 </div>
             </div>
+            <div
+                class="action"
+                id="erase-cache"
+                @click="onEraseCacheClick"
+                title="Clear Cache"
+            >
+                <div class="action-button">
+                    <svg viewBox="0 0 640 512">
+                        <path
+                            d="M120 376c-13.3 0-24 10.7-24 24s10.7 24 24 24 24-10.7 24-24-10.7-24-24-24zm80 0c-13.3 0-24 10.7-24 24s10.7 24 24 24 24-10.7 24-24-10.7-24-24-24zm80 0c-13.3 0-24 10.7-24 24s10.7 24 24 24 24-10.7 24-24-10.7-24-24-24zm80 0c-13.3 0-24 10.7-24 24s10.7 24 24 24 24-10.7 24-24-10.7-24-24-24zm238.6 49.4c-14.5-14.5-22.6-34.1-22.6-54.6V269.2c0-20.5 8.1-40.1 22.6-54.6l36.7-36.7c6.2-6.2 6.2-16.4 0-22.6l-22.6-22.6c-6.2-6.2-16.4-6.2-22.6 0l-36.7 36.7c-26.5 26.5-41.4 62.4-41.4 99.9V288h-64v-50.9c0-8.7-1.8-17.2-5.2-25.2L364.5 29.1C356.9 11.4 339.6 0 320.3 0H176c-26.5 0-48 21.5-48 48v112h-16c-26.5 0-48 21.5-48 48v91.2C26.3 317.2 0 355.4 0 400c0 61.9 50.1 112 112 112h256c61.9 0 112-50.1 112-112 0-17.3-4.2-33.4-11.2-48H512v18.7c0 37.5 14.9 73.4 41.4 99.9l36.7 36.7c6.2 6.2 16.4 6.2 22.6 0l22.6-22.6c6.2-6.2 6.2-16.4 0-22.6l-36.7-36.7zM192 64h117.8l68.6 160H256l-64-64V64zm176 384H112c-26.5 0-48-21.5-48-48s21.5-48 48-48h256c26.5 0 48 21.5 48 48s-21.5 48-48 48z"
+                        ></path>
+                    </svg>
+                </div>
+            </div>
         </div>
         <textarea
             class="textarea input"
             @keydown.enter.exact.prevent
-            @keyup.enter.exact="translate"
+            @keyup.enter.exact="onEnterPress"
             @input="onInput"
             v-model="$store.state.input"
             autofocus
@@ -40,13 +52,14 @@
         <div class="controllers">
             <div class="language-controller">
                 <div class="selected">
-                    {{ languageTitleByControllerId('FROM') }}
+                    {{ $store.getters.languageByContollerId('FROM').title }}
                 </div>
                 <div class="list">
                     <div
                         class="language"
                         v-for="language in $store.state.avaliableLanguages"
-                        @click="onLanguageCLick('FROM', language)"
+                        :key="language.languageId"
+                        @click="onLanguageClick('FROM', language)"
                     >
                         {{ language.title }}
                     </div>
@@ -54,7 +67,7 @@
             </div>
             <div
                 class="translate-button"
-                :class="{ disabled: !$store.state.input || $store.state.loadingState.loading }"
+                :class="{ disabled: !isTranslationRequired }"
                 @click="translate"
             >
                 <svg viewBox="0 0 448 512">
@@ -67,13 +80,14 @@
             </div>
             <div class="language-controller">
                 <div class="selected">
-                    {{ languageTitleByControllerId('TO') }}
+                    {{ $store.getters.languageByContollerId('TO').title }}
                 </div>
                 <div class="list">
                     <div
                         class="language"
                         v-for="language in $store.state.avaliableLanguages"
-                        @click="onLanguageCLick('TO', language)"
+                        :key="language.languageId"
+                        @click="onLanguageClick('TO', language)"
                     >
                         {{ language.title }}
                     </div>
@@ -100,8 +114,11 @@
         TRANSLATE_ACTION,
         SWAP_LANGUAGES_ACTION,
         SET_LANGUAGE_BY_CONTROLLER_ID,
-        GET_AVALIABLE_LANGUAGES_ACTION
+        GET_AVALIABLE_LANGUAGES_ACTION,
+        TRY_TO_LOAD_EXISTING_TRANSLATION
     } from '@/store/types';
+
+    import { VUEX_PERSISTEDSTATE_KEY } from '@/consts';
 
     import Loader from '@/components/Loader';
 
@@ -113,7 +130,7 @@
             translate() {
                 this.$store.dispatch(TRANSLATE_ACTION, {
                     text: this.$store.state.input,
-                    lang: this.languages
+                    lang: this.$store.getters.lang
                 });
             },
             onInput({ target }) {
@@ -121,38 +138,49 @@
 
                 target.style.height = 'auto';
                 target.style.height = `${target.scrollHeight}px`;
+
+                this.$store.dispatch(TRY_TO_LOAD_EXISTING_TRANSLATION, {
+                    input: target.value,
+                    lang: this.$store.getters.lang
+                });
             },
             onClearClick() {
                 this.$store.commit(SET_INPUT, { value: '' });
-                this.$store.commit(INCREMENT_CURRENT_TRANSLATION_ID);
+                this.$store.dispatch(INCREMENT_CURRENT_TRANSLATION_ID);
             },
             onSwapClick() {
                 this.$store.dispatch(SWAP_LANGUAGES_ACTION);
             },
-            languageTitleByControllerId(controllerId) {
-                const languageId = this.$store.state.languages.find(
-                    language => language.controllerId === controllerId
-                ).languageId;
-                return this.$store.state.avaliableLanguages.find(
-                    language => language.languageId === languageId
-                ).title;
+            onEraseCacheClick() {
+                delete window.localStorage[VUEX_PERSISTEDSTATE_KEY];
             },
-            onLanguageCLick(controllerId, language) {
+            onLanguageClick(controllerId, language) {
                 this.$store.commit(SET_LANGUAGE_BY_CONTROLLER_ID, {
                     controllerId,
                     languageId: language.languageId
                 });
+            },
+            onEnterPress() {
+                if (this.isTranslationRequired) this.translate();
             }
         },
         computed: {
-            languages() {
-                return this.$store.state.languages
-                    .map(language => language.languageId)
-                    .join('-');
+            isTranslationRequired() {
+                return !!(
+                    this.$store.state.input &&
+                    !this.$store.state.loadingState.loading &&
+                    !this.$store.getters.alreadyTranslated.length
+                );
             }
         },
         mounted() {
-            this.$store.dispatch(GET_AVALIABLE_LANGUAGES_ACTION);
+            if (!window.localStorage[VUEX_PERSISTEDSTATE_KEY])
+                this.$store.dispatch(GET_AVALIABLE_LANGUAGES_ACTION);
+
+            this.$store.dispatch(TRY_TO_LOAD_EXISTING_TRANSLATION, {
+                input: this.$store.state.input,
+                lang: this.$store.getters.lang
+            });
         }
     };
 </script>
@@ -163,6 +191,7 @@
     }
 
     :root {
+        --default-font: 'PT Sans', sans-serif;
         --default-transition-time: 0.2s;
 
         --background-color: #282c34;
@@ -177,11 +206,20 @@
         --block-color3: var(--font-color);
         --block-color4: var(--light-grey);
     }
+
+    body {
+        margin: 0;
+    }
 </style>
 
 <style scoped>
+    @font-face {
+        font-family: 'PT Sans';
+        src: url('./../assets/fonts/PTSansRegular.ttf');
+    }
+
     .translation-wrapper-component {
-        font-family: 'PT Sans', sans-serif;
+        font-family: var(--default-font);
 
         display: flex;
         flex-direction: column;
@@ -198,12 +236,27 @@
 
     .actions {
         display: flex;
-
+        align-items: center;
         padding: 5px;
     }
 
     .action {
+        font-size: 13px;
         transition: var(--default-transition-time);
+        height: 100%;
+    }
+
+    .action#erase-cache {
+        font-size: 0.8em;
+    }
+
+    .action#erase-cache svg {
+        height: 16px;
+        width: 16px;
+    }
+
+    .action#erase-cache > .action-button:hover {
+        background-color: rgba(232, 17, 35, 0.9);
     }
 
     .action.disabled {
@@ -213,8 +266,6 @@
     }
 
     .action-button {
-        font-size: 13px;
-
         display: flex;
 
         padding: 5px 15px;
@@ -229,9 +280,12 @@
     .action-button > svg {
         width: 13px;
         height: 13px;
-        margin-right: 5px;
 
         fill: currentColor;
+    }
+
+    .action-button > svg + .action-title {
+        margin-left: 5px;
     }
 
     .action-button:hover {
