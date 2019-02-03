@@ -79,7 +79,7 @@
 
 <style scoped>
     .loader-component {
-        height: 230px;
+        height: 240px;
     }
 
     .loader-component > svg {

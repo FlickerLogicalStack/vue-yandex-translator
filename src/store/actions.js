@@ -8,10 +8,15 @@ import {
     SWAP_LANGUAGES_ACTION,
     GET_AVALIABLE_LANGUAGES_ACTION,
     SET_TRANSLATION_ID,
-    TRY_TO_LOAD_EXISTING_TRANSLATION
+    TRY_TO_LOAD_EXISTING_TRANSLATION,
+    ERASE_ALL_DATA,
+    SET_INPUT,
+    CLEAR_TRANSLATIONS
 } from './types';
 
 import { fetchAvaliableLanguages } from '@/api';
+
+import { VUEX_PERSISTEDSTATE_KEY } from '@/consts';
 
 export default {
     [INCREMENT_CURRENT_TRANSLATION_ID]({ state, commit }) {
@@ -23,12 +28,12 @@ export default {
             ) + 1
         );
     },
-    [TRANSLATE_ACTION]({ state, commit, dispatch }, { text, lang }) {
+    [TRANSLATE_ACTION]({ state, commit, dispatch, getters }) {
         dispatch(INCREMENT_CURRENT_TRANSLATION_ID);
         commit(SET_LOADING_STATE, true);
 
         state.processors.forEach(processor =>
-            processor.translate(text, lang).then(response => {
+            processor.translate(state.input, getters.lang).then(response => {
                 if (processor.isValid(response)) {
                     commit(ADD_TRANSLATION, {
                         translationId: state.currentTranslationId,
@@ -57,21 +62,23 @@ export default {
         fetchAvaliableLanguages().then(({ langs }) => {
             const languagesAsStrings = Object.entries(langs)
                 .map(([id, title]) => `${title}-${id}`)
-                .sort();
+                .sort()
+                .map(lang => lang.split('-'));
 
             commit(
                 SET_AVALIABLE_LANGUAGES,
-                languagesAsStrings.map(lang => ({
-                    languageId: lang.split('-')[1],
-                    title: lang.split('-')[0]
+                languagesAsStrings.map(([title, id]) => ({
+                    languageId: id,
+                    title: title
                 }))
             );
         });
     },
-    [TRY_TO_LOAD_EXISTING_TRANSLATION]({ state, commit }, { input, lang }) {
+    [TRY_TO_LOAD_EXISTING_TRANSLATION]({ state, commit, getters }) {
         const translationWithTheSameInput = state.history.find(
             translation =>
-                translation.input === input && translation.lang === lang
+                translation.input === state.input &&
+                translation.lang === getters.lang
         );
 
         if (translationWithTheSameInput) {
@@ -80,5 +87,13 @@ export default {
                 translationWithTheSameInput.translationId
             );
         }
+    },
+    [ERASE_ALL_DATA]({ commit }) {
+        commit(SET_INPUT, '');
+        commit(CLEAR_TRANSLATIONS);
+        commit(SET_TRANSLATION_ID, 0);
+        commit(SET_LOADING_STATE, false);
+
+        delete window.localStorage[VUEX_PERSISTEDSTATE_KEY];
     }
 };

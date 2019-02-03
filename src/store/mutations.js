@@ -4,7 +4,8 @@ import {
     ADD_TRANSLATION,
     SET_AVALIABLE_LANGUAGES,
     SET_LOADING_STATE,
-    SET_TRANSLATION_ID
+    SET_TRANSLATION_ID,
+    CLEAR_TRANSLATIONS
 } from './types';
 
 export default {
@@ -26,7 +27,7 @@ export default {
             new Set()
         );
 
-        if (uniqueTranslationIds.size >= 50) state.history.shift();
+        if (uniqueTranslationIds.size >= 100) state.history.shift();
 
         state.history.push(
             Object.freeze({
@@ -34,6 +35,10 @@ export default {
                 translationId: state.currentTranslationId
             })
         );
+    },
+
+    [CLEAR_TRANSLATIONS](state) {
+        state.history = [];
     },
 
     [SET_AVALIABLE_LANGUAGES](state, languages) {

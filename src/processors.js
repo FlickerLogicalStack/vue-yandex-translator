@@ -32,25 +32,53 @@ export class DictionaryProcessor extends TranslationProcessor {
     toOutput(translation) {
         const c = string => string.charAt(0).toUpperCase() + string.slice(1);
 
-        let result = '';
+        const result = [];
 
-        translation.output.def.forEach((article, i, arr) => {
-            result += `${c(article.pos)}:\n`;
+        translation.output.def.forEach(ipart => {
+            const part = { text: c(ipart.pos), groups: [] };
 
-            article.tr.forEach(tr => {
-                result += `  • ${c(tr.text)}`;
-                if (tr.mean) {
-                    result += ` (${tr.mean.map(mean => mean.text).join(', ')})`;
-                }
-                if (tr.ex) {
-                    result += ':\n';
-                    result += tr.ex
-                        .map(example => `    –  ${c(example.text)}`)
-                        .join('.\n');
-                }
+            (ipart.tr || []).forEach(itr => {
+                const tr = {
+                    text: c(itr.text),
+                    groups: [],
+                    collapsed: true,
+                    isWord: true
+                };
 
-                result += '\n';
+                if (itr.syn)
+                    tr.groups.push({
+                        text: 'Synonyms',
+                        groups: (itr.syn || []).map(isyn => ({
+                            text: c(isyn.text)
+                        }))
+                    });
+
+                if (itr.mean)
+                    tr.groups.push({
+                        text: 'Meaning',
+                        groups: (itr.mean || []).map(iex => ({
+                            text: c(iex.text)
+                        }))
+                    });
+
+                if (itr.ex)
+                    tr.groups.push({
+                        text: 'Examples',
+                        isWord: true,
+                        groups: (itr.ex || []).map(iex => ({
+                            text: c(iex.text),
+                            collapsed: true,
+                            isWord: true,
+                            groups: (iex.tr || []).map(i => ({
+                                text: c(i.text)
+                            }))
+                        }))
+                    });
+
+                part.groups.push(tr);
             });
+
+            result.push(part);
         });
 
         return result;

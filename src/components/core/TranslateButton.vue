@@ -2,7 +2,7 @@
     <div
         class="translate-button-component"
         :class="{ disabled: !$store.getters.isTranslationRequired }"
-        @click="translate"
+        @click="onClick"
     >
         <svg viewBox="0 0 448 512">
             <path
@@ -19,13 +19,9 @@
 
     export default {
         name: 'TranslateButton',
-        mixins: [],
-        components: {},
-        props: {},
-        data: () => ({}),
         methods: {
-            translate() {
-                this.$emit('on-button-click');
+            onClick() {
+                this.$store.dispatch(TRANSLATE_ACTION);
             }
         }
     };
@@ -48,6 +44,7 @@
 
         flex-grow: 1;
         align-items: center;
+        justify-content: center;
     }
 
     .translate-button-component.disabled {
@@ -58,7 +55,7 @@
 
     .translate-button-component:hover {
         color: var(--light-grey);
-        background-color: var(--medium-grey);
+        background-color: var(--light-blue);
     }
 
     .translate-button-component > svg {

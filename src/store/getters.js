@@ -1,28 +1,33 @@
 export default {
-    currentTranslationOutput: (state, getters) => {
+    currentOutput: (state, getters) => {
+        if (getters.currentTranslation) {
+            const processor = state.processors.find(
+                processor =>
+                    processor.id === getters.currentTranslation.processorId
+            );
+
+            return processor.toOutput(getters.currentTranslation);
+        }
+
+        return null;
+    },
+    currentTranslation: state => {
         const processorsMap = state.processors.reduce((acc, processor) => {
             acc[processor.id] = processor;
             return acc;
         }, {});
 
-        if (getters.currentTranslations.length) {
-            const mainTranslation = getters.currentTranslations.sort(
-                (a, b) =>
-                    processorsMap[b.processorId].priority -
-                    processorsMap[a.processorId].priority
-            )[0];
-
-            return processorsMap[mainTranslation.processorId].toOutput(
-                mainTranslation
-            );
-        }
-
-        return null;
-    },
-    currentTranslations: state => {
-        return state.history.filter(
-            translation =>
-                translation.translationId === state.currentTranslationId
+        return (
+            state.history
+                .filter(
+                    translation =>
+                        translation.translationId === state.currentTranslationId
+                )
+                .sort(
+                    (a, b) =>
+                        processorsMap[b.processorId].priority -
+                        processorsMap[a.processorId].priority
+                )[0] || null
         );
     },
     languageByContollerId: state => controllerId => {
@@ -37,7 +42,7 @@ export default {
     alreadyTranslated: state => {
         return state.history.filter(
             translation =>
-                translation.input === state.input &&
+                translation.input.trim() === state.input.trim() &&
                 translation.lang ===
                     state.languages
                         .map(language => language.languageId)

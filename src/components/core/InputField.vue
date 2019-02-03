@@ -25,16 +25,11 @@
                 target.style.height = 'auto';
                 target.style.height = `${target.scrollHeight}px`;
 
-                this.$store.dispatch(TRY_TO_LOAD_EXISTING_TRANSLATION, {
-                    input: target.value,
-                    lang: this.$store.getters.lang
-                });
-            },
-            translate() {
-                this.$emit('on-enter-press');
+                this.$store.dispatch(TRY_TO_LOAD_EXISTING_TRANSLATION);
             },
             onEnterPress() {
-                if (this.$store.getters.isTranslationRequired) this.translate();
+                if (this.$store.getters.isTranslationRequired)
+                    this.$store.dispatch(TRANSLATE_ACTION);
             }
         }
     };

@@ -52,6 +52,8 @@
         background-color: var(--dark-grey);
 
         flex-grow: 0;
+
+        --langauge-height: 30px;
     }
 
     .language-controller-component:hover > .selected {
@@ -107,7 +109,7 @@
     }
 
     .language-controller-component:hover > .list {
-        max-height: 200px;
+        max-height: calc(var(--langauge-height) * 8);
 
         border-width: 1px;
         border-color: var(--medium-grey);
@@ -119,9 +121,10 @@
 
         transition: var(--default-transition-time);
         text-align: center;
+        height: var(--langauge-height);
     }
 
     .language:hover {
-        background-color: var(--medium-grey);
+        background-color: var(--light-blue);
     }
 </style>
