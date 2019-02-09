@@ -60,9 +60,10 @@
         INCREMENT_CURRENT_TRANSLATION_ID,
         SWAP_LANGUAGES_ACTION,
         TRANSLATE_ACTION,
-        GET_AVALIABLE_LANGUAGES_ACTION,
+        FETCH_AVALIABLE_LANGUAGES_ACTION,
         TRY_TO_LOAD_EXISTING_TRANSLATION,
-        ERASE_ALL_DATA
+        ERASE_ALL_DATA,
+        FETCH_AVALIABLE_LANGUAGES_PAIRS_ACTION
     } from '@/store/types';
 
     import { VUEX_PERSISTEDSTATE_KEY } from '@/consts';
@@ -103,8 +104,10 @@
         },
 
         mounted() {
-            if (!window.localStorage[VUEX_PERSISTEDSTATE_KEY])
-                this.$store.dispatch(GET_AVALIABLE_LANGUAGES_ACTION);
+            if (!window.localStorage[VUEX_PERSISTEDSTATE_KEY]) {
+                this.$store.dispatch(FETCH_AVALIABLE_LANGUAGES_PAIRS_ACTION);
+                this.$store.dispatch(FETCH_AVALIABLE_LANGUAGES_ACTION);
+            }
 
             this.$store.dispatch(TRY_TO_LOAD_EXISTING_TRANSLATION);
         }
@@ -112,40 +115,10 @@
 </script>
 
 <style>
-    ::-webkit-scrollbar {
-        display: none;
-    }
-
-    :root {
-        --default-font: 'PT Sans', sans-serif;
-        --default-transition-time: 0.2s;
-
-        --background-color: #282c34;
-        --font-color: #abb2bf;
-
-        --dark-grey: #333842;
-        --medium-grey: #3f4550;
-        --light-grey: #d7dae0;
-
-        --light-blue: #4d78cc;
-
-        --block-color1: var(--dark-grey);
-        --block-color2: var(--medium-grey);
-        --block-color3: var(--font-color);
-        --block-color4: var(--light-grey);
-    }
-
-    body {
-        margin: 0;
-    }
+    @import '../assets/css/globalSettings.css';
 </style>
 
 <style>
-    @font-face {
-        font-family: 'PT Sans';
-        src: url('./../assets/fonts/PTSansRegular.ttf');
-    }
-
     .translation-wrapper-component {
         font-family: var(--default-font);
 
@@ -155,7 +128,7 @@
         box-sizing: border-box;
         width: 290px;
         padding: 10px;
-        font-size: 13px;
+        font-size: inherit;
 
         color: var(--font-color);
         background-color: var(--background-color);
@@ -214,7 +187,7 @@
     }
 
     .powered-by-link {
-        font-size: 10px;
+        font-size: 0.7em;
 
         margin-top: 5px;
 

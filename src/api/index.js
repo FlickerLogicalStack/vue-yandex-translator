@@ -5,7 +5,8 @@ import {
     TRANSLATER_API_KEY,
     DICTIONARY_ENDPOINT,
     TRANSLATER_ENDPOINT,
-    AVALIABLE_LANGUAGES_ENDPOINT
+    AVALIABLE_LANGUAGES_ENDPOINT,
+    AVALIABLE_LANGUAGES_PAIRS_ENDPOINT
 } from '@/consts.js';
 
 const apiCall = ({ url, fetchParams, text, lang }) => {
@@ -56,5 +57,13 @@ export const fetchAvaliableLanguages = () => {
 
     return fetch(
         `${AVALIABLE_LANGUAGES_ENDPOINT}?${createParams(requestParams)}`
+    ).then(response => response.json());
+};
+
+export const fetchAvaliableDicionaryPairs = () => {
+    const requestParams = { key: DICTIONARY_API_KEY };
+
+    return fetch(
+        `${AVALIABLE_LANGUAGES_PAIRS_ENDPOINT}?${createParams(requestParams)}`
     ).then(response => response.json());
 };

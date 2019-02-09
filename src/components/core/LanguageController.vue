@@ -64,7 +64,7 @@
     }
 
     .selected {
-        font-size: 14px;
+        font-size: inherit;
 
         position: relative;
         z-index: 5;

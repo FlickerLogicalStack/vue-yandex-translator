@@ -32,6 +32,13 @@ const getDefaultAvaliableLanguages = () => [
     }
 ];
 
+const getDefaultAvaliableLanguagesPairs = () => [
+    'ru-en',
+    'en-ru',
+    'en-en',
+    'ru-ru'
+];
+
 export default {
     currentTranslationId: 0,
     loadingState: {
@@ -42,6 +49,7 @@ export default {
     history: [],
     languages: getDefaultLanguages(),
     avaliableLanguages: getDefaultAvaliableLanguages(),
+    avaliableDictionaryPairs: getDefaultAvaliableLanguagesPairs(),
     translationOutputsMap: {
         [BASIC]: BasicOutput,
         [DICTIONARY]: DictionaryOutput

@@ -12,7 +12,7 @@
 
 <style scoped>
     .action-component {
-        font-size: 13px;
+        font-size: 0.9em;
         transition: var(--default-transition-time);
         height: 100%;
     }
@@ -27,7 +27,7 @@
     }
 
     .action-component#erase-cache > .action-button:hover {
-        background-color: #e81123e6;
+        background-color: var(--bloody-red);
     }
 
     .action-component.disabled {

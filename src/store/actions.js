@@ -6,15 +6,17 @@ import {
     SET_LOADING_STATE,
     TRANSLATE_ACTION,
     SWAP_LANGUAGES_ACTION,
-    GET_AVALIABLE_LANGUAGES_ACTION,
+    FETCH_AVALIABLE_LANGUAGES_ACTION,
     SET_TRANSLATION_ID,
     TRY_TO_LOAD_EXISTING_TRANSLATION,
     ERASE_ALL_DATA,
     SET_INPUT,
-    CLEAR_TRANSLATIONS
+    CLEAR_TRANSLATIONS,
+    FETCH_AVALIABLE_LANGUAGES_PAIRS_ACTION,
+    SET_AVALIABLE_LANGUAGES_PAIRS
 } from './types';
 
-import { fetchAvaliableLanguages } from '@/api';
+import { fetchAvaliableLanguages, fetchAvaliableDicionaryPairs } from '@/api';
 
 import { VUEX_PERSISTEDSTATE_KEY } from '@/consts';
 
@@ -34,7 +36,7 @@ export default {
 
         state.processors.forEach(processor =>
             processor.translate(state.input, getters.lang).then(response => {
-                if (processor.isValid(response)) {
+                if (processor.isValidResponse(response.output)) {
                     commit(ADD_TRANSLATION, {
                         translationId: state.currentTranslationId,
                         processorId: processor.id,
@@ -58,7 +60,7 @@ export default {
             });
         });
     },
-    [GET_AVALIABLE_LANGUAGES_ACTION]({ state, commit }) {
+    [FETCH_AVALIABLE_LANGUAGES_ACTION]({ state, commit }) {
         fetchAvaliableLanguages().then(({ langs }) => {
             const languagesAsStrings = Object.entries(langs)
                 .map(([id, title]) => `${title}-${id}`)
@@ -73,6 +75,11 @@ export default {
                 }))
             );
         });
+    },
+    [FETCH_AVALIABLE_LANGUAGES_PAIRS_ACTION]({ state, commit }) {
+        fetchAvaliableDicionaryPairs().then(response =>
+            commit(SET_AVALIABLE_LANGUAGES_PAIRS, response)
+        );
     },
     [TRY_TO_LOAD_EXISTING_TRANSLATION]({ state, commit, getters }) {
         const translationWithTheSameInput = state.history.find(

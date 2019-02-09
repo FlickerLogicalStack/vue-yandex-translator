@@ -15,7 +15,11 @@ class TranslationProcessor {
         return new Promise((resolve, reject) => {});
     }
 
-    isValid(response) {
+    isValidResponse(response) {
+        return false;
+    }
+
+    isValidPair(pair, storeState) {
         return false;
     }
 }
@@ -26,7 +30,11 @@ export class DictionaryProcessor extends TranslationProcessor {
     }
 
     translate(text, lang) {
-        return fetchDictionaryTranslation({ text, lang, processor: this });
+        return fetchDictionaryTranslation({
+            text,
+            lang,
+            processor: this
+        });
     }
 
     toOutput(translation) {
@@ -84,8 +92,12 @@ export class DictionaryProcessor extends TranslationProcessor {
         return result;
     }
 
-    isValid({ output }) {
-        return output.def && output.def.length;
+    isValidResponse(response) {
+        return response.def && response.def.length;
+    }
+
+    isValidPair(pair, storeState) {
+        return storeState.avaliableDictionaryPairs.includes(pair);
     }
 }
 
@@ -95,14 +107,22 @@ export class BasicProcessor extends TranslationProcessor {
     }
 
     translate(text, lang) {
-        return fetchBasicTranslation({ text, lang, processor: this });
+        return fetchBasicTranslation({
+            text,
+            lang,
+            processor: this
+        });
     }
 
-    isValid({ output }) {
-        return output.text && output.text.length;
+    isValidResponse(response) {
+        return response.text && response.text.length;
     }
 
     toOutput(translation) {
         return translation.output.text[0];
+    }
+
+    isValidPair(pair, storeState) {
+        return true;
     }
 }

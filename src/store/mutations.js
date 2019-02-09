@@ -5,7 +5,8 @@ import {
     SET_AVALIABLE_LANGUAGES,
     SET_LOADING_STATE,
     SET_TRANSLATION_ID,
-    CLEAR_TRANSLATIONS
+    CLEAR_TRANSLATIONS,
+    SET_AVALIABLE_LANGUAGES_PAIRS
 } from './types';
 
 export default {
@@ -51,5 +52,9 @@ export default {
 
     [SET_LOADING_STATE](state, isLoading) {
         state.loadingState.loading = isLoading;
+    },
+
+    [SET_AVALIABLE_LANGUAGES_PAIRS](state, arrayOfPairs) {
+        state.avaliableDictionaryPairs = arrayOfPairs;
     }
 };

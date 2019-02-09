@@ -38,5 +38,6 @@
 <style scoped>
     .textarea.input {
         max-height: 10em;
+        font-size: inherit;
     }
 </style>

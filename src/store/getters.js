@@ -11,12 +11,13 @@ export default {
 
         return null;
     },
-    currentTranslation: state => {
-        const processorsMap = state.processors.reduce((acc, processor) => {
+    processorsMap: state => {
+        return state.processors.reduce((acc, processor) => {
             acc[processor.id] = processor;
             return acc;
         }, {});
-
+    },
+    currentTranslation: (state, getters) => {
         return (
             state.history
                 .filter(
@@ -25,8 +26,8 @@ export default {
                 )
                 .sort(
                     (a, b) =>
-                        processorsMap[b.processorId].priority -
-                        processorsMap[a.processorId].priority
+                        getters.processorsMap[b.processorId].priority -
+                        getters.processorsMap[a.processorId].priority
                 )[0] || null
         );
     },
@@ -58,5 +59,13 @@ export default {
             !state.loadingState.loading &&
             !getters.alreadyTranslated.length
         );
+    },
+
+    avaliableTranslationTypes: (state, getters) => {
+        return Object.entries(getters.processorsMap)
+            .filter(([type, processor]) =>
+                processor.isValidPair(getters.lang, state)
+            )
+            .map(([type, _]) => type);
     }
 };
