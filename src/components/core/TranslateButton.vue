@@ -19,7 +19,7 @@
 </template>
 
 <script>
-    import { TRANSLATE_ACTION } from '@/store/types';
+    import { TRANSLATE_ACTION } from '@/store/types/actions';
     import { DICTIONARY } from '@/consts';
 
     export default {

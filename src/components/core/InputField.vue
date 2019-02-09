@@ -10,11 +10,11 @@
 </template>
 
 <script>
+    import { SET_INPUT } from '@/store/types/mutations';
     import {
-        SET_INPUT,
-        TRY_TO_LOAD_EXISTING_TRANSLATION,
+        TRY_TO_LOAD_EXISTING_TRANSLATION_ACTION,
         TRANSLATE_ACTION
-    } from '@/store/types';
+    } from '@/store/types/actions';
 
     export default {
         name: 'InputField',
@@ -25,7 +25,7 @@
                 target.style.height = 'auto';
                 target.style.height = `${target.scrollHeight}px`;
 
-                this.$store.dispatch(TRY_TO_LOAD_EXISTING_TRANSLATION);
+                this.$store.dispatch(TRY_TO_LOAD_EXISTING_TRANSLATION_ACTION);
             },
             onEnterPress() {
                 if (this.$store.getters.isTranslationRequired)

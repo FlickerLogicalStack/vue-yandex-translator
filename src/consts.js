@@ -19,3 +19,6 @@ export const DICTIONARY = 'DICTIONARY';
 export const BASIC = 'BASIC';
 
 export const VUEX_PERSISTEDSTATE_KEY = 'vuex';
+
+export const NO_TRANSITION_CLASS_NAME = 'no-transition';
+export const FONT_SIZE_PROPERTY_NAME = '--font-size';

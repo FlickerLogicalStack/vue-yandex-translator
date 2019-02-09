@@ -98,22 +98,30 @@
     }
 
     .title {
-        transition: var(--default-transition-time);
         display: flex;
+
+        transition: var(--default-transition-time);
+
         align-items: center;
     }
 
     .expander {
-        margin-right: 5px;
-        height: 13px;
+        display: flex;
+
         width: 13px;
+        height: 13px;
+        margin-right: 5px;
+
         cursor: pointer;
         user-select: none;
+
+        flex-shrink: 0;
     }
 
     .expander.hidden {
-        opacity: 0;
         pointer-events: none;
+
+        opacity: 0;
     }
 
     .expander.expanded > svg {
@@ -121,9 +129,13 @@
     }
 
     .expander > svg {
-        transition: var(--default-transition-time);
-        height: 100%;
         width: 100%;
+        height: 100%;
+
+        transition: var(--default-transition-time);
+
+        align-items: center;
+        justify-content: center;
     }
 
     .expander:hover {

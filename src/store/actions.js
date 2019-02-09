@@ -1,27 +1,36 @@
 import {
-    SET_LANGUAGE_BY_CONTROLLER_ID,
-    ADD_TRANSLATION,
-    SET_AVALIABLE_LANGUAGES,
-    INCREMENT_CURRENT_TRANSLATION_ID,
-    SET_LOADING_STATE,
+    SET_NEW_TRANSLATION_ID_ACTION,
     TRANSLATE_ACTION,
     SWAP_LANGUAGES_ACTION,
     FETCH_AVALIABLE_LANGUAGES_ACTION,
+    FETCH_AVALIABLE_LANGUAGES_PAIRS_ACTION,
+    TRY_TO_LOAD_EXISTING_TRANSLATION_ACTION,
+    ERASE_ALL_DATA_ACTION,
+    INCREMENT_INTERFACE_SIZE_ACTION
+} from './types/actions';
+
+import {
     SET_TRANSLATION_ID,
-    TRY_TO_LOAD_EXISTING_TRANSLATION,
-    ERASE_ALL_DATA,
+    SET_LOADING_STATE,
+    ADD_TRANSLATION,
+    SET_LANGUAGE_BY_CONTROLLER_ID,
+    SET_AVALIABLE_LANGUAGES,
+    SET_AVALIABLE_LANGUAGES_PAIRS,
     SET_INPUT,
     CLEAR_TRANSLATIONS,
-    FETCH_AVALIABLE_LANGUAGES_PAIRS_ACTION,
-    SET_AVALIABLE_LANGUAGES_PAIRS
-} from './types';
+    INCREMENT_INTERFACE_SIZE
+} from './types/mutations';
 
 import { fetchAvaliableLanguages, fetchAvaliableDicionaryPairs } from '@/api';
 
-import { VUEX_PERSISTEDSTATE_KEY } from '@/consts';
+import {
+    VUEX_PERSISTEDSTATE_KEY,
+    NO_TRANSITION_CLASS_NAME,
+    FONT_SIZE_PROPERTY_NAME
+} from '@/consts';
 
 export default {
-    [INCREMENT_CURRENT_TRANSLATION_ID]({ state, commit }) {
+    [SET_NEW_TRANSLATION_ID_ACTION]({ state, commit }) {
         commit(
             SET_TRANSLATION_ID,
             Math.max(
@@ -31,7 +40,7 @@ export default {
         );
     },
     [TRANSLATE_ACTION]({ state, commit, dispatch, getters }) {
-        dispatch(INCREMENT_CURRENT_TRANSLATION_ID);
+        dispatch(SET_NEW_TRANSLATION_ID_ACTION);
         commit(SET_LOADING_STATE, true);
 
         state.processors.forEach(processor =>
@@ -81,7 +90,7 @@ export default {
             commit(SET_AVALIABLE_LANGUAGES_PAIRS, response)
         );
     },
-    [TRY_TO_LOAD_EXISTING_TRANSLATION]({ state, commit, getters }) {
+    [TRY_TO_LOAD_EXISTING_TRANSLATION_ACTION]({ state, commit, getters }) {
         const translationWithTheSameInput = state.history.find(
             translation =>
                 translation.input === state.input &&
@@ -95,12 +104,30 @@ export default {
             );
         }
     },
-    [ERASE_ALL_DATA]({ commit }) {
+    [ERASE_ALL_DATA_ACTION]({ commit }) {
         commit(SET_INPUT, '');
         commit(CLEAR_TRANSLATIONS);
         commit(SET_TRANSLATION_ID, 0);
         commit(SET_LOADING_STATE, false);
 
         delete window.localStorage[VUEX_PERSISTEDSTATE_KEY];
+    },
+    [INCREMENT_INTERFACE_SIZE_ACTION]({ state, commit }, value) {
+        commit(INCREMENT_INTERFACE_SIZE, value);
+
+        document.body.classList.add(NO_TRANSITION_CLASS_NAME);
+
+        setTimeout(() => {
+            document
+                .querySelector(':root')
+                .style.setProperty(
+                    FONT_SIZE_PROPERTY_NAME,
+                    `${state.interfaceSize}px`
+                );
+
+            setTimeout(() => {
+                document.body.classList.remove(NO_TRANSITION_CLASS_NAME);
+            }, 10);
+        }, 50);
     }
 };

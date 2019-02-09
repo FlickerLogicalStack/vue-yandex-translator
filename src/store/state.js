@@ -40,6 +40,7 @@ const getDefaultAvaliableLanguagesPairs = () => [
 ];
 
 export default {
+    interfaceSize: 14,
     currentTranslationId: 0,
     loadingState: {
         loading: false

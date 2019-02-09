@@ -2,12 +2,13 @@ import {
     SET_INPUT,
     SET_LANGUAGE_BY_CONTROLLER_ID,
     ADD_TRANSLATION,
-    SET_AVALIABLE_LANGUAGES,
-    SET_LOADING_STATE,
-    SET_TRANSLATION_ID,
     CLEAR_TRANSLATIONS,
-    SET_AVALIABLE_LANGUAGES_PAIRS
-} from './types';
+    SET_AVALIABLE_LANGUAGES,
+    SET_TRANSLATION_ID,
+    SET_LOADING_STATE,
+    SET_AVALIABLE_LANGUAGES_PAIRS,
+    INCREMENT_INTERFACE_SIZE
+} from './types/mutations';
 
 export default {
     [SET_INPUT](state, value) {
@@ -56,5 +57,9 @@ export default {
 
     [SET_AVALIABLE_LANGUAGES_PAIRS](state, arrayOfPairs) {
         state.avaliableDictionaryPairs = arrayOfPairs;
+    },
+
+    [INCREMENT_INTERFACE_SIZE](state, value) {
+        state.interfaceSize += value;
     }
 };

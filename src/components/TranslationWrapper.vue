@@ -1,5 +1,9 @@
 <template>
-    <div class="translation-wrapper-component">
+    <div
+        class="translation-wrapper-component"
+        @keyup.ctrl.plus.exact="changeInterfaceSize(1)"
+        @keyup.ctrl.minus.exact="changeInterfaceSize(-1)"
+    >
         <div class="actions">
             <Action id="swap">
                 <div class="action-button" @click="onSwapClick">
@@ -55,16 +59,17 @@
 </template>
 
 <script>
+    import { SET_INPUT } from '@/store/types/mutations';
     import {
-        SET_INPUT,
-        INCREMENT_CURRENT_TRANSLATION_ID,
+        SET_NEW_TRANSLATION_ID_ACTION,
+        ERASE_ALL_DATA_ACTION,
         SWAP_LANGUAGES_ACTION,
+        TRY_TO_LOAD_EXISTING_TRANSLATION_ACTION,
         TRANSLATE_ACTION,
-        FETCH_AVALIABLE_LANGUAGES_ACTION,
-        TRY_TO_LOAD_EXISTING_TRANSLATION,
-        ERASE_ALL_DATA,
-        FETCH_AVALIABLE_LANGUAGES_PAIRS_ACTION
-    } from '@/store/types';
+        INCREMENT_INTERFACE_SIZE_ACTION,
+        FETCH_AVALIABLE_LANGUAGES_PAIRS_ACTION,
+        FETCH_AVALIABLE_LANGUAGES_ACTION
+    } from '@/store/types/actions';
 
     import { VUEX_PERSISTEDSTATE_KEY } from '@/consts';
 
@@ -88,18 +93,21 @@
         methods: {
             onClearClick() {
                 this.$store.commit(SET_INPUT, '');
-                this.$store.dispatch(INCREMENT_CURRENT_TRANSLATION_ID);
+                this.$store.dispatch(SET_NEW_TRANSLATION_ID_ACTION);
             },
             onEraseCacheClick() {
-                this.$store.dispatch(ERASE_ALL_DATA);
+                this.$store.dispatch(ERASE_ALL_DATA_ACTION);
             },
             onSwapClick() {
                 this.$store.dispatch(SWAP_LANGUAGES_ACTION);
 
-                this.$store.dispatch(TRY_TO_LOAD_EXISTING_TRANSLATION);
+                this.$store.dispatch(TRY_TO_LOAD_EXISTING_TRANSLATION_ACTION);
             },
             translate() {
                 this.$store.dispatch(TRANSLATE_ACTION);
+            },
+            changeInterfaceSize(value) {
+                this.$store.dispatch(INCREMENT_INTERFACE_SIZE_ACTION, value);
             }
         },
 
@@ -109,7 +117,8 @@
                 this.$store.dispatch(FETCH_AVALIABLE_LANGUAGES_ACTION);
             }
 
-            this.$store.dispatch(TRY_TO_LOAD_EXISTING_TRANSLATION);
+            this.$store.dispatch(TRY_TO_LOAD_EXISTING_TRANSLATION_ACTION);
+            this.changeInterfaceSize(0);
         }
     };
 </script>
@@ -120,8 +129,6 @@
 
 <style>
     .translation-wrapper-component {
-        font-family: var(--default-font);
-
         display: flex;
         flex-direction: column;
 

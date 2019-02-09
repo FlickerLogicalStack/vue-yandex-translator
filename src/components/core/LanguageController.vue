@@ -17,7 +17,7 @@
 </template>
 
 <script>
-    import { SET_LANGUAGE_BY_CONTROLLER_ID } from '@/store/types';
+    import { SET_LANGUAGE_BY_CONTROLLER_ID } from '@/store/types/mutations';
 
     export default {
         name: 'LanguageController',
