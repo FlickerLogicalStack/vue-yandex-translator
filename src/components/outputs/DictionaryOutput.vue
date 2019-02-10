@@ -12,7 +12,6 @@
     import NestedTranslation from '@/components/ui/NestedTranslation';
 
     export default {
-        name: 'DictionaryOutput',
         components: { NestedTranslation }
     };
 </script>

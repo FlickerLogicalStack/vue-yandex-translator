@@ -13,11 +13,7 @@
                     />
                 </svg>
             </span>
-            <span
-                v-if="!isEndpoint && !isWord"
-                v-html="text"
-                class="span-word"
-            ></span>
+            <span v-if="!isEndpoint && !isWord" v-html="text" class="span-word"></span>
             <Word v-else :text="text" :selectable="selectable"></Word>
         </div>
         <div class="content" v-show="isExpanded && !isEndpoint">

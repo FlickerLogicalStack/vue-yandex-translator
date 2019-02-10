@@ -17,7 +17,6 @@
     } from '@/store/types/actions';
 
     export default {
-        name: 'InputField',
         methods: {
             onInput({ target }) {
                 this.$store.commit(SET_INPUT, target.value);

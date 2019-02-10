@@ -8,11 +8,12 @@ module.exports = {
         parser: 'babel-eslint'
     },
     rules: {
-        quotes: ['error', 'single'],
+        quotes: ['warn', 'single'],
         'indent-legacy': 0,
         indent: 0,
         semi: ['warn', 'always'],
         'space-before-function-paren': 0,
-        curly: 0
+        curly: 0,
+        'vue/valid-v-on': 1
     }
 };

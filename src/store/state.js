@@ -10,33 +10,36 @@ import { DictionaryProcessor, BasicProcessor } from '@/processors';
 import BasicOutput from '@/components/outputs/BasicOutput';
 import DictionaryOutput from '@/components/outputs/DictionaryOutput';
 
-const getDefaultLanguages = () => [
-    {
-        controllerId: FROM_LANGUAGE_CONTROLLER_ID,
-        languageId: 'ru'
-    },
-    {
-        controllerId: TO_LANGUAGE_CONTROLLER_ID,
-        languageId: 'en'
-    }
-];
+const EN = 'en';
+const RU = 'ru';
 
 const getDefaultAvaliableLanguages = () => [
     {
-        languageId: 'ru',
+        languageId: RU,
         title: 'Russian'
     },
     {
-        languageId: 'en',
+        languageId: EN,
         title: 'English'
     }
 ];
 
+const getDefaultLanguages = () => [
+    {
+        controllerId: FROM_LANGUAGE_CONTROLLER_ID,
+        languageId: getDefaultAvaliableLanguages()[0].title
+    },
+    {
+        controllerId: TO_LANGUAGE_CONTROLLER_ID,
+        languageId: getDefaultAvaliableLanguages()[1].title
+    }
+];
+
 const getDefaultAvaliableLanguagesPairs = () => [
-    'ru-en',
-    'en-ru',
-    'en-en',
-    'ru-ru'
+    `${EN}-${RU}`,
+    `${RU}-${EN}`,
+    `${EN}-${EN}`,
+    `${RU}-${RU}`
 ];
 
 export default {

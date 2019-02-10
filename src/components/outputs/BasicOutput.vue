@@ -3,7 +3,5 @@
 </template>
 
 <script>
-    export default {
-        name: 'BasicOutput'
-    };
+    export default {};
 </script>

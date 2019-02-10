@@ -12,12 +12,12 @@ import {
 import {
     SET_TRANSLATION_ID,
     SET_LOADING_STATE,
-    ADD_TRANSLATION,
+    ADD_TRANSLATION_TO_HISTORY,
     SET_LANGUAGE_BY_CONTROLLER_ID,
     SET_AVALIABLE_LANGUAGES,
     SET_AVALIABLE_LANGUAGES_PAIRS,
     SET_INPUT,
-    CLEAR_TRANSLATIONS,
+    CLEAR_TRANSLATION_HISTORY,
     INCREMENT_INTERFACE_SIZE
 } from './types/mutations';
 
@@ -44,25 +44,18 @@ export default {
         commit(SET_LOADING_STATE, true);
 
         state.processors.forEach(processor => {
-            if (
-                processor.isValidPair(
-                    getters.lang,
-                    state.avaliableLanguagesPairs
-                )
-            )
-                processor
-                    .translate(state.input, getters.lang)
-                    .then(response => {
-                        if (processor.isValidResponse(response.output)) {
-                            commit(ADD_TRANSLATION, {
-                                translationId: state.currentTranslationId,
-                                processorId: processor.id,
-                                ...response
-                            });
+            if (processor.isValidPair(getters.lang, state.avaliableLanguagesPairs))
+                processor.translate(state.input, getters.lang).then(response => {
+                    if (processor.isValidResponse(response.output)) {
+                        commit(ADD_TRANSLATION_TO_HISTORY, {
+                            translationId: state.currentTranslationId,
+                            processorId: processor.id,
+                            ...response
+                        });
 
-                            commit(SET_LOADING_STATE, false);
-                        }
-                    });
+                        commit(SET_LOADING_STATE, false);
+                    }
+                });
         });
     },
     [SWAP_LANGUAGES_ACTION]({ state, commit }) {
@@ -107,20 +100,16 @@ export default {
     [TRY_TO_LOAD_EXISTING_TRANSLATION_ACTION]({ state, commit, getters }) {
         const translationWithTheSameInput = state.history.find(
             translation =>
-                translation.input === state.input &&
-                translation.lang === getters.lang
+                translation.input === state.input && translation.lang === getters.lang
         );
 
         if (translationWithTheSameInput) {
-            commit(
-                SET_TRANSLATION_ID,
-                translationWithTheSameInput.translationId
-            );
+            commit(SET_TRANSLATION_ID, translationWithTheSameInput.translationId);
         }
     },
     [ERASE_ALL_DATA_ACTION]({ commit }) {
         commit(SET_INPUT, '');
-        commit(CLEAR_TRANSLATIONS);
+        commit(CLEAR_TRANSLATION_HISTORY);
         commit(SET_TRANSLATION_ID, 0);
         commit(SET_LOADING_STATE, false);
 
@@ -134,10 +123,7 @@ export default {
         setTimeout(() => {
             document
                 .querySelector(':root')
-                .style.setProperty(
-                    FONT_SIZE_PROPERTY_NAME,
-                    `${state.interfaceSize}px`
-                );
+                .style.setProperty(FONT_SIZE_PROPERTY_NAME, `${state.interfaceSize}px`);
 
             setTimeout(() => {
                 document.body.classList.remove(NO_TRANSITION_CLASS_NAME);

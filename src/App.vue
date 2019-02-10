@@ -1,16 +1,15 @@
 <template>
-  <div id="app">
-    <TranslationWrapper/>
-  </div>
+    <div id="app">
+        <Translator></Translator>
+    </div>
 </template>
 
 <script>
-import TranslationWrapper from './components/TranslationWrapper.vue';
+    import Translator from './components/Translator.vue';
 
-export default {
-    name: 'app',
-    components: {
-        TranslationWrapper
-    }
-};
+    export default {
+        components: {
+            Translator
+        }
+    };
 </script>

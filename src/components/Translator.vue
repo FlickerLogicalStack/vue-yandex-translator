@@ -81,7 +81,6 @@
     import Loader from '@/components/core/Loader';
 
     export default {
-        name: 'translation-wrapper',
         components: {
             Action,
             InputField,

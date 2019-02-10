@@ -1,8 +1,8 @@
 import {
     SET_INPUT,
     SET_LANGUAGE_BY_CONTROLLER_ID,
-    ADD_TRANSLATION,
-    CLEAR_TRANSLATIONS,
+    ADD_TRANSLATION_TO_HISTORY,
+    CLEAR_TRANSLATION_HISTORY,
     SET_AVALIABLE_LANGUAGES,
     SET_TRANSLATION_ID,
     SET_LOADING_STATE,
@@ -23,7 +23,7 @@ export default {
         languageForMutation.languageId = languageId;
     },
 
-    [ADD_TRANSLATION](state, payload) {
+    [ADD_TRANSLATION_TO_HISTORY](state, payload) {
         const uniqueTranslationIds = state.history.reduce(
             (acc, translation) => acc.add(translation.translationId),
             new Set()
@@ -39,7 +39,7 @@ export default {
         );
     },
 
-    [CLEAR_TRANSLATIONS](state) {
+    [CLEAR_TRANSLATION_HISTORY](state) {
         state.history = [];
     },
 

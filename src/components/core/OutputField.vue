@@ -8,7 +8,6 @@
     import NestedTranslation from '@/components/ui/NestedTranslation';
 
     export default {
-        name: 'OutputField',
         components: { NestedTranslation },
         computed: {
             currentComponent() {

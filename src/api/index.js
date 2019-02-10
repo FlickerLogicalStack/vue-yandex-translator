@@ -43,8 +43,7 @@ export const fetchBasicTranslation = ({ text, lang }) => {
             method: 'POST',
             body: createParams(requestParams),
             headers: {
-                'Content-Type':
-                    'application/x-www-form-urlencoded;charset=UTF-8'
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
             }
         },
         text,
@@ -55,9 +54,9 @@ export const fetchBasicTranslation = ({ text, lang }) => {
 export const fetchAvaliableLanguages = () => {
     const requestParams = { key: TRANSLATER_API_KEY, ui: 'en' };
 
-    return fetch(
-        `${AVALIABLE_LANGUAGES_ENDPOINT}?${createParams(requestParams)}`
-    ).then(response => response.json());
+    return fetch(`${AVALIABLE_LANGUAGES_ENDPOINT}?${createParams(requestParams)}`).then(
+        response => response.json()
+    );
 };
 
 export const fetchAvaliableDicionaryPairs = () => {

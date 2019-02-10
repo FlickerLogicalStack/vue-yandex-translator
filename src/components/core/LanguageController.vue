@@ -25,7 +25,6 @@
     import { SET_LANGUAGE_BY_CONTROLLER_ID } from '@/store/types/mutations';
 
     export default {
-        name: 'LanguageController',
         props: {
             id: {
                 type: String,
@@ -75,9 +74,7 @@
             },
             matchedLanguages() {
                 return this.$store.state.avaliableLanguages.filter(language =>
-                    language.title
-                        .toLowerCase()
-                        .includes(this.searchBuffer.toLowerCase())
+                    language.title.toLowerCase().includes(this.searchBuffer.toLowerCase())
                 );
             }
         },
@@ -130,6 +127,7 @@
         margin: auto;
         font-family: inherit;
         text-align: center;
+        font-size: 1em;
     }
 
     .list {

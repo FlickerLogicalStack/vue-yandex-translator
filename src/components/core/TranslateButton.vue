@@ -23,7 +23,6 @@
     import { DICTIONARY } from '@/consts';
 
     export default {
-        name: 'TranslateButton',
         methods: {
             onClick() {
                 this.$store.dispatch(TRANSLATE_ACTION);

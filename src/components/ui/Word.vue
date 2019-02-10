@@ -21,7 +21,6 @@
     import { copyToClipboard } from '../../utils/index.js';
 
     export default {
-        name: 'Word',
         data: () => ({
             isHovered: false,
             tooltipShown: false,
@@ -48,13 +47,9 @@
                 copyToClipboard(this.text);
 
                 this.tooltipShown = true;
-                if (this.tooltipTimeout != null)
-                    clearTimeout(this.tooltipTimeout);
+                if (this.tooltipTimeout != null) clearTimeout(this.tooltipTimeout);
 
-                this.tooltipTimeout = setTimeout(
-                    () => (this.tooltipShown = false),
-                    1000
-                );
+                this.tooltipTimeout = setTimeout(() => (this.tooltipShown = false), 1000);
             },
             onTooltipClick() {
                 this.tooltipShown = false;

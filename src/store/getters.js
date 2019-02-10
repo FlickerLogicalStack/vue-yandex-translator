@@ -2,8 +2,7 @@ export default {
     currentOutput: (state, getters) => {
         if (getters.currentTranslation) {
             const processor = state.processors.find(
-                processor =>
-                    processor.id === getters.currentTranslation.processorId
+                processor => processor.id === getters.currentTranslation.processorId
             );
 
             return processor.toOutput(getters.currentTranslation);
@@ -45,13 +44,10 @@ export default {
             translation =>
                 translation.input.trim() === state.input.trim() &&
                 translation.lang ===
-                    state.languages
-                        .map(language => language.languageId)
-                        .join('-')
+                    state.languages.map(language => language.languageId).join('-')
         );
     },
-    lang: state =>
-        state.languages.map(language => language.languageId).join('-'),
+    lang: state => state.languages.map(language => language.languageId).join('-'),
 
     isTranslationRequired: (state, getters) => {
         return !!(
@@ -64,10 +60,7 @@ export default {
     avaliableTranslationTypes: (state, getters) => {
         return Object.entries(getters.processorsMap)
             .filter(([type, processor]) =>
-                processor.isValidPair(
-                    getters.lang,
-                    state.avaliableLanguagesPairs
-                )
+                processor.isValidPair(getters.lang, state.avaliableLanguagesPairs)
             )
             .map(([type, _]) => type);
     }

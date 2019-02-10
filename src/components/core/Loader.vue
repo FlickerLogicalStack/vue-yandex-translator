@@ -66,15 +66,7 @@
 </template>
 
 <script>
-    export default {
-        name: 'loader',
-        mixins: [],
-        components: {},
-        props: {},
-        data: () => ({}),
-        computed: {},
-        methods: {}
-    };
+    export default {};
 </script>
 
 <style scoped>
