@@ -56,7 +56,7 @@ export default {
     },
 
     [SET_AVALIABLE_LANGUAGES_PAIRS](state, arrayOfPairs) {
-        state.avaliableDictionaryPairs = arrayOfPairs;
+        state.avaliableLanguagesPairs = arrayOfPairs;
     },
 
     [INCREMENT_INTERFACE_SIZE](state, value) {

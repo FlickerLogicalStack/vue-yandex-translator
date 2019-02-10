@@ -44,7 +44,12 @@ export default {
         commit(SET_LOADING_STATE, true);
 
         state.processors.forEach(processor => {
-            if (processor.isValidPair(getters.lang, state))
+            if (
+                processor.isValidPair(
+                    getters.lang,
+                    state.avaliableLanguagesPairs
+                )
+            )
                 processor
                     .translate(state.input, getters.lang)
                     .then(response => {

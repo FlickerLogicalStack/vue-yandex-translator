@@ -50,7 +50,7 @@ export default {
     history: [],
     languages: getDefaultLanguages(),
     avaliableLanguages: getDefaultAvaliableLanguages(),
-    avaliableDictionaryPairs: getDefaultAvaliableLanguagesPairs(),
+    avaliableLanguagesPairs: getDefaultAvaliableLanguagesPairs(),
     translationOutputsMap: {
         [BASIC]: BasicOutput,
         [DICTIONARY]: DictionaryOutput

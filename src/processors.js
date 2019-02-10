@@ -95,8 +95,8 @@ export class DictionaryProcessor extends TranslationProcessor {
         return response.def && response.def.length;
     }
 
-    isValidPair(pair, storeState) {
-        return storeState.avaliableDictionaryPairs.includes(pair);
+    isValidPair(pair, pairs) {
+        return pairs.includes(pair);
     }
 }
 
@@ -120,7 +120,7 @@ export class BasicProcessor extends TranslationProcessor {
         return translation.output.text[0];
     }
 
-    isValidPair(pair, storeState) {
+    isValidPair(pair, pairs) {
         return true;
     }
 }

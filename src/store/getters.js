@@ -64,7 +64,10 @@ export default {
     avaliableTranslationTypes: (state, getters) => {
         return Object.entries(getters.processorsMap)
             .filter(([type, processor]) =>
-                processor.isValidPair(getters.lang, state)
+                processor.isValidPair(
+                    getters.lang,
+                    state.avaliableLanguagesPairs
+                )
             )
             .map(([type, _]) => type);
     }
