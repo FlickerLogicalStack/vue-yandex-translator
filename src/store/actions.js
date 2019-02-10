@@ -43,19 +43,22 @@ export default {
         dispatch(SET_NEW_TRANSLATION_ID_ACTION);
         commit(SET_LOADING_STATE, true);
 
-        state.processors.forEach(processor =>
-            processor.translate(state.input, getters.lang).then(response => {
-                if (processor.isValidResponse(response.output)) {
-                    commit(ADD_TRANSLATION, {
-                        translationId: state.currentTranslationId,
-                        processorId: processor.id,
-                        ...response
-                    });
+        state.processors.forEach(processor => {
+            if (processor.isValidPair(getters.lang, state))
+                processor
+                    .translate(state.input, getters.lang)
+                    .then(response => {
+                        if (processor.isValidResponse(response.output)) {
+                            commit(ADD_TRANSLATION, {
+                                translationId: state.currentTranslationId,
+                                processorId: processor.id,
+                                ...response
+                            });
 
-                    commit(SET_LOADING_STATE, false);
-                }
-            })
-        );
+                            commit(SET_LOADING_STATE, false);
+                        }
+                    });
+        });
     },
     [SWAP_LANGUAGES_ACTION]({ state, commit }) {
         const reversedCurrentLanguages = JSON.parse(
@@ -70,25 +73,31 @@ export default {
         });
     },
     [FETCH_AVALIABLE_LANGUAGES_ACTION]({ state, commit }) {
-        fetchAvaliableLanguages().then(({ langs }) => {
-            const languagesAsStrings = Object.entries(langs)
-                .map(([id, title]) => `${title}-${id}`)
-                .sort()
-                .map(lang => lang.split('-'));
+        commit(SET_LOADING_STATE, true);
 
-            commit(
-                SET_AVALIABLE_LANGUAGES,
-                languagesAsStrings.map(([title, id]) => ({
-                    languageId: id,
-                    title: title
-                }))
-            );
-        });
+        fetchAvaliableLanguages()
+            .then(({ langs }) => {
+                const languagesAsStrings = Object.entries(langs)
+                    .map(([id, title]) => `${title}-${id}`)
+                    .sort()
+                    .map(lang => lang.split('-'));
+
+                commit(
+                    SET_AVALIABLE_LANGUAGES,
+                    languagesAsStrings.map(([title, id]) => ({
+                        languageId: id,
+                        title: title
+                    }))
+                );
+            })
+            .finally(() => commit(SET_LOADING_STATE, false));
     },
     [FETCH_AVALIABLE_LANGUAGES_PAIRS_ACTION]({ state, commit }) {
-        fetchAvaliableDicionaryPairs().then(response =>
-            commit(SET_AVALIABLE_LANGUAGES_PAIRS, response)
-        );
+        commit(SET_LOADING_STATE, true);
+
+        fetchAvaliableDicionaryPairs()
+            .then(response => commit(SET_AVALIABLE_LANGUAGES_PAIRS, response))
+            .finally(() => commit(SET_LOADING_STATE, false));
     },
     [TRY_TO_LOAD_EXISTING_TRANSLATION_ACTION]({ state, commit, getters }) {
         const translationWithTheSameInput = state.history.find(

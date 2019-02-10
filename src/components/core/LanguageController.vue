@@ -1,14 +1,19 @@
 <template>
     <div class="language-controller-component">
-        <div class="selected">
-            {{ $store.getters.languageByContollerId(id).title }}
-        </div>
+        <input
+            class="language-input"
+            v-model="searchBuffer"
+            @focus="onInputFocus"
+            @blur="onInputBlur"
+            @keyup.esc="onInputBlur"
+            @keyup.enter="onInputEnter"
+        />
         <div class="list">
             <div
                 class="language"
-                v-for="language in $store.state.avaliableLanguages"
+                v-for="language in languagesList"
                 :key="language.languageId"
-                @click="onLanguageClick(language)"
+                @mousedown="onLanguageClick(language)"
             >
                 {{ language.title }}
             </div>
@@ -27,13 +32,57 @@
                 required: true
             }
         },
+        data: () => ({
+            activeSearch: false,
+            searchBuffer: ''
+        }),
         methods: {
-            onLanguageClick(language) {
+            setLanguage(language) {
                 this.$store.commit(SET_LANGUAGE_BY_CONTROLLER_ID, {
                     controllerId: this.id,
                     languageId: language.languageId
                 });
+            },
+            onLanguageClick(language) {
+                this.setLanguage(language);
+                this.searchBuffer = this.languageTitle;
+            },
+            onInputBlur() {
+                this.activeSearch = false;
+
+                this.searchBuffer = this.languageTitle;
+            },
+            onInputFocus() {
+                this.activeSearch = true;
+            },
+            onInputEnter() {
+                if (this.matchedLanguages.length === 1) {
+                    this.onLanguageClick(...this.matchedLanguages);
+                    this.onInputBlur();
+                }
             }
+        },
+        computed: {
+            languageTitle() {
+                return this.$store.getters.languageByContollerId(this.id).title;
+            },
+            languagesList() {
+                if (this.activeSearch) {
+                    return this.matchedLanguages;
+                }
+
+                return this.$store.state.avaliableLanguages;
+            },
+            matchedLanguages() {
+                return this.$store.state.avaliableLanguages.filter(language =>
+                    language.title
+                        .toLowerCase()
+                        .includes(this.searchBuffer.toLowerCase())
+                );
+            }
+        },
+        created() {
+            this.searchBuffer = this.languageTitle;
         }
     };
 </script>
@@ -56,20 +105,16 @@
         --langauge-height: 30px;
     }
 
-    .language-controller-component:hover > .selected {
+    .language-controller-component:hover > .language-input {
         border-top: 1px solid var(--medium-grey);
         border-right: 1px solid var(--medium-grey);
         border-bottom: 1px solid var(--dark-grey);
         border-left: 1px solid var(--medium-grey);
     }
 
-    .selected {
-        font-size: inherit;
-
+    .language-input {
         position: relative;
         z-index: 5;
-
-        display: flex;
 
         box-sizing: border-box;
         height: 100%;
@@ -78,8 +123,13 @@
 
         border: 1px solid transparent;
 
-        align-items: center;
-        justify-content: center;
+        width: 100%;
+        background-color: inherit;
+        outline: none;
+        color: inherit;
+        margin: auto;
+        font-family: inherit;
+        text-align: center;
     }
 
     .list {
@@ -108,6 +158,7 @@
         right: 0;
     }
 
+    input.language-input:focus + .list,
     .language-controller-component:hover > .list {
         max-height: calc(var(--langauge-height) * 8);
 

@@ -1,6 +1,6 @@
 <template>
     <div class="output-field-component">
-        <component v-if="currentComponent" :is="currentComponent"></component>
+        <component :is="currentComponent"></component>
     </div>
 </template>
 

@@ -7,7 +7,7 @@
         <svg
             class="dictionary-avaliability"
             viewBox="0 0 448 512"
-            v-if="isDictionaryAvaliable"
+            v-show="isDictionaryAvaliable"
         >
             <path
                 fill="currentColor"

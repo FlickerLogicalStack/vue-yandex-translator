@@ -1,5 +1,5 @@
 <template>
-    <span
+    <div
         class="word-component"
         :class="{hover: isHovered, selectable: selectable}"
         @mouseover="onMouseOver"
@@ -14,7 +14,7 @@
         >
             Copied: <b>{{ text }}</b>
         </div>
-    </span>
+    </div>
 </template>
 
 <script>

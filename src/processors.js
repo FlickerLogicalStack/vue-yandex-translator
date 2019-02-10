@@ -32,8 +32,7 @@ export class DictionaryProcessor extends TranslationProcessor {
     translate(text, lang) {
         return fetchDictionaryTranslation({
             text,
-            lang,
-            processor: this
+            lang
         });
     }
 
@@ -109,8 +108,7 @@ export class BasicProcessor extends TranslationProcessor {
     translate(text, lang) {
         return fetchBasicTranslation({
             text,
-            lang,
-            processor: this
+            lang
         });
     }
 

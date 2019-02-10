@@ -20,7 +20,7 @@
             ></span>
             <Word v-else :text="text" :selectable="selectable"></Word>
         </div>
-        <div class="content" v-if="isExpanded && !isEndpoint">
+        <div class="content" v-show="isExpanded && !isEndpoint">
             <NestedTranslation
                 v-for="group in groups"
                 :key="group.title"
@@ -145,5 +145,9 @@
     .nested-translation-component:not(.endpoint) > .title:hover,
     .nested-translation-component:not(.endpoint) > .title:hover + .content {
         background-color: var(--medium-grey);
+    }
+
+    .content {
+        transition: var(--default-transition-time);
     }
 </style>
