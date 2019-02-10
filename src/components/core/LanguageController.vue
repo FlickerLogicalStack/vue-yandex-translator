@@ -8,14 +8,19 @@
             @keyup.esc="onInputBlur"
             @keyup.enter="onInputEnter"
         />
-        <div class="list">
-            <div
-                class="language"
-                v-for="language in languagesList"
-                :key="language.languageId"
-                @mousedown="onLanguageClick(language)"
-            >
-                {{ language.title }}
+        <div class="list-wrapper">
+            <div class="list">
+                <div
+                    class="language"
+                    v-for="language in languagesList"
+                    :key="language.languageId"
+                    @mousedown="onLanguageClick(language)"
+                >
+                    {{ language.title }}
+                </div>
+                <div v-show="!languagesList.length" class="no-matches-info">
+                    No matches
+                </div>
             </div>
         </div>
     </div>
@@ -36,24 +41,31 @@
             searchBuffer: ''
         }),
         methods: {
+            copyTitleToBuffer() {
+                this.searchBuffer = this.languageTitle;
+            },
+
             setLanguage(language) {
                 this.$store.commit(SET_LANGUAGE_BY_CONTROLLER_ID, {
                     controllerId: this.id,
                     languageId: language.languageId
                 });
             },
+
             onLanguageClick(language) {
                 this.setLanguage(language);
-                this.searchBuffer = this.languageTitle;
+                this.copyTitleToBuffer();
             },
+
             onInputBlur() {
                 this.activeSearch = false;
-
-                this.searchBuffer = this.languageTitle;
+                this.copyTitleToBuffer();
             },
+
             onInputFocus() {
                 this.activeSearch = true;
             },
+
             onInputEnter() {
                 if (this.matchedLanguages.length === 1) {
                     this.onLanguageClick(...this.matchedLanguages);
@@ -65,6 +77,7 @@
             languageTitle() {
                 return this.$store.getters.languageByContollerId(this.id).title;
             },
+
             languagesList() {
                 if (this.activeSearch) {
                     return this.matchedLanguages;
@@ -72,14 +85,22 @@
 
                 return this.$store.state.avaliableLanguages;
             },
+
             matchedLanguages() {
                 return this.$store.state.avaliableLanguages.filter(language =>
-                    language.title.toLowerCase().includes(this.searchBuffer.toLowerCase())
+                    language.title
+                        .toLowerCase()
+                        .includes(this.searchBuffer.toLowerCase())
                 );
             }
         },
         created() {
-            this.searchBuffer = this.languageTitle;
+            this.copyTitleToBuffer();
+        },
+        watch: {
+            languageTitle(value) {
+                this.searchBuffer = value;
+            }
         }
     };
 </script>
@@ -92,7 +113,6 @@
         width: 70px;
         height: 100%;
 
-        cursor: pointer;
         user-select: none;
 
         background-color: var(--dark-grey);
@@ -100,13 +120,6 @@
         flex-grow: 0;
 
         --langauge-height: 30px;
-    }
-
-    .language-controller-component:hover > .language-input {
-        border-top: 1px solid var(--medium-grey);
-        border-right: 1px solid var(--medium-grey);
-        border-bottom: 1px solid var(--dark-grey);
-        border-left: 1px solid var(--medium-grey);
     }
 
     .language-input {
@@ -128,49 +141,58 @@
         font-family: inherit;
         text-align: center;
         font-size: 1em;
+        padding: 0;
     }
 
-    .list {
+    .language-controller-component:hover > .language-input,
+    .language-input:focus {
+        border-top: 1px solid var(--medium-grey);
+        border-right: 1px solid var(--medium-grey);
+        border-bottom: 1px solid transparent;
+        border-left: 1px solid var(--medium-grey);
+    }
+
+    .list-wrapper {
         position: absolute;
         z-index: 4;
-        top: calc(100% - 1px);
-
-        overflow: hidden;
-        overflow-y: auto;
-
-        box-sizing: border-box;
-        width: calc(100% + 40px);
-        max-height: 0;
-
-        transition: var(--default-transition-time);
-
-        border: 0 solid transparent;
         background-color: var(--dark-grey);
+        top: calc(100% - 1px);
+        width: calc(100% + 40px);
+
+        max-height: 0;
+        overflow: scroll;
+        transition: max-height var(--default-transition-time);
     }
 
-    .language-controller-component:nth-child(1) .list {
+    .language-controller-component:nth-child(1) > .list-wrapper {
         left: 0;
     }
 
-    .language-controller-component:nth-child(3) .list {
+    .language-controller-component:nth-child(3) > .list-wrapper {
         right: 0;
     }
 
-    input.language-input:focus + .list,
-    .language-controller-component:hover > .list {
+    .language-controller-component:hover > .list-wrapper,
+    .language-input:focus + .list-wrapper {
         max-height: calc(var(--langauge-height) * 8);
+    }
 
-        border-width: 1px;
-        border-color: var(--medium-grey);
+    .list {
+        border: 1px solid var(--medium-grey);
+    }
+
+    .list:empty {
+        border: none;
+    }
+
+    .list > * {
+        line-height: var(--langauge-height);
+        text-align: center;
     }
 
     .language {
-        box-sizing: border-box;
-        padding: 5px;
-
         transition: var(--default-transition-time);
-        text-align: center;
-        height: var(--langauge-height);
+        cursor: pointer;
     }
 
     .language:hover {

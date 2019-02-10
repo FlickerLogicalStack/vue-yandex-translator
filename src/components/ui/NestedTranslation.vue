@@ -6,14 +6,13 @@
                 :class="{expanded: isExpanded, hidden: isEndpoint}"
                 @click="toggle"
             >
-                <svg viewBox="0 0 192 512">
-                    <path
-                        fill="currentColor"
-                        d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                    />
-                </svg>
+                <ArrowIcon></ArrowIcon>
             </span>
-            <span v-if="!isEndpoint && !isWord" v-html="text" class="span-word"></span>
+            <span
+                v-if="!isEndpoint && !isWord"
+                v-html="text"
+                class="span-word"
+            ></span>
             <Word v-else :text="text" :selectable="selectable"></Word>
         </div>
         <div class="content" v-show="isExpanded && !isEndpoint">
@@ -29,10 +28,11 @@
 
 <script>
     import Word from '@/components/ui//Word';
+    import ArrowIcon from '@/assets/svg/arrow-right.svg';
 
     export default {
         name: 'NestedTranslation',
-        components: { Word },
+        components: { Word, ArrowIcon },
         data: () => ({
             isExpanded: true
         }),

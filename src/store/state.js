@@ -27,11 +27,11 @@ const getDefaultAvaliableLanguages = () => [
 const getDefaultLanguages = () => [
     {
         controllerId: FROM_LANGUAGE_CONTROLLER_ID,
-        languageId: getDefaultAvaliableLanguages()[0].title
+        languageId: getDefaultAvaliableLanguages()[0].languageId
     },
     {
         controllerId: TO_LANGUAGE_CONTROLLER_ID,
-        languageId: getDefaultAvaliableLanguages()[1].title
+        languageId: getDefaultAvaliableLanguages()[1].languageId
     }
 ];
 

@@ -40,17 +40,24 @@
             onMouseOver() {
                 if (this.selectable) this.isHovered = true;
             },
+
             onMouseLeave() {
                 this.isHovered = false;
             },
+
             onWordClick() {
                 copyToClipboard(this.text);
 
                 this.tooltipShown = true;
-                if (this.tooltipTimeout != null) clearTimeout(this.tooltipTimeout);
+                if (this.tooltipTimeout != null)
+                    clearTimeout(this.tooltipTimeout);
 
-                this.tooltipTimeout = setTimeout(() => (this.tooltipShown = false), 1000);
+                this.tooltipTimeout = setTimeout(
+                    () => (this.tooltipShown = false),
+                    1000
+                );
             },
+
             onTooltipClick() {
                 this.tooltipShown = false;
                 if (this.tooltipTimeout) clearTimeout(this.tooltipTimeout);

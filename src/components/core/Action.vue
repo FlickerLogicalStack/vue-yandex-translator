@@ -49,8 +49,6 @@
     .action-button > svg {
         width: 13px;
         height: 13px;
-
-        fill: currentColor;
     }
 
     .action-button > svg + .action-title {

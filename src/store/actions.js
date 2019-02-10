@@ -39,25 +39,34 @@ export default {
             ) + 1
         );
     },
+
     [TRANSLATE_ACTION]({ state, commit, dispatch, getters }) {
         dispatch(SET_NEW_TRANSLATION_ID_ACTION);
         commit(SET_LOADING_STATE, true);
 
         state.processors.forEach(processor => {
-            if (processor.isValidPair(getters.lang, state.avaliableLanguagesPairs))
-                processor.translate(state.input, getters.lang).then(response => {
-                    if (processor.isValidResponse(response.output)) {
-                        commit(ADD_TRANSLATION_TO_HISTORY, {
-                            translationId: state.currentTranslationId,
-                            processorId: processor.id,
-                            ...response
-                        });
+            if (
+                processor.isValidPair(
+                    getters.lang,
+                    state.avaliableLanguagesPairs
+                )
+            )
+                processor
+                    .translate(state.input, getters.lang)
+                    .then(response => {
+                        if (processor.isValidResponse(response.output)) {
+                            commit(ADD_TRANSLATION_TO_HISTORY, {
+                                translationId: state.currentTranslationId,
+                                processorId: processor.id,
+                                ...response
+                            });
 
-                        commit(SET_LOADING_STATE, false);
-                    }
-                });
+                            commit(SET_LOADING_STATE, false);
+                        }
+                    });
         });
     },
+
     [SWAP_LANGUAGES_ACTION]({ state, commit }) {
         const reversedCurrentLanguages = JSON.parse(
             JSON.stringify(state.languages.map(language => language.languageId))
@@ -70,6 +79,7 @@ export default {
             });
         });
     },
+
     [FETCH_AVALIABLE_LANGUAGES_ACTION]({ state, commit }) {
         commit(SET_LOADING_STATE, true);
 
@@ -90,6 +100,7 @@ export default {
             })
             .finally(() => commit(SET_LOADING_STATE, false));
     },
+
     [FETCH_AVALIABLE_LANGUAGES_PAIRS_ACTION]({ state, commit }) {
         commit(SET_LOADING_STATE, true);
 
@@ -97,16 +108,22 @@ export default {
             .then(response => commit(SET_AVALIABLE_LANGUAGES_PAIRS, response))
             .finally(() => commit(SET_LOADING_STATE, false));
     },
+
     [TRY_TO_LOAD_EXISTING_TRANSLATION_ACTION]({ state, commit, getters }) {
         const translationWithTheSameInput = state.history.find(
             translation =>
-                translation.input === state.input && translation.lang === getters.lang
+                translation.input === state.input &&
+                translation.lang === getters.lang
         );
 
         if (translationWithTheSameInput) {
-            commit(SET_TRANSLATION_ID, translationWithTheSameInput.translationId);
+            commit(
+                SET_TRANSLATION_ID,
+                translationWithTheSameInput.translationId
+            );
         }
     },
+
     [ERASE_ALL_DATA_ACTION]({ commit }) {
         commit(SET_INPUT, '');
         commit(CLEAR_TRANSLATION_HISTORY);
@@ -115,6 +132,7 @@ export default {
 
         delete window.localStorage[VUEX_PERSISTEDSTATE_KEY];
     },
+
     [INCREMENT_INTERFACE_SIZE_ACTION]({ state, commit }, value) {
         commit(INCREMENT_INTERFACE_SIZE, value);
 
@@ -123,7 +141,10 @@ export default {
         setTimeout(() => {
             document
                 .querySelector(':root')
-                .style.setProperty(FONT_SIZE_PROPERTY_NAME, `${state.interfaceSize}px`);
+                .style.setProperty(
+                    FONT_SIZE_PROPERTY_NAME,
+                    `${state.interfaceSize}px`
+                );
 
             setTimeout(() => {
                 document.body.classList.remove(NO_TRANSITION_CLASS_NAME);

@@ -9,15 +9,7 @@ import {
     AVALIABLE_LANGUAGES_PAIRS_ENDPOINT
 } from '@/consts.js';
 
-const apiCall = ({ url, fetchParams, text, lang }) => {
-    return fetch(url, fetchParams)
-        .then(response => response.json())
-        .then(json => ({
-            lang,
-            input: text,
-            output: json
-        }));
-};
+const url = (base, params) => `${base}?${createParams(params)}`;
 
 export const fetchDictionaryTranslation = ({ text, lang }) => {
     const requestParams = {
@@ -27,42 +19,36 @@ export const fetchDictionaryTranslation = ({ text, lang }) => {
         ui: lang.split('-')[0]
     };
 
-    return apiCall({
-        url: `${DICTIONARY_ENDPOINT}?${createParams(requestParams)}`,
-        text,
-        lang
-    });
+    return fetch(url(DICTIONARY_ENDPOINT, requestParams))
+        .then(response => response.json())
+        .then(json => ({
+            lang,
+            input: text,
+            output: json
+        }));
 };
 
-export const fetchBasicTranslation = ({ text, lang }) => {
-    const requestParams = { key: TRANSLATER_API_KEY, text, lang };
+export const fetchBasicTranslation = ({ text, lang }) =>
+    fetch(TRANSLATER_ENDPOINT, {
+        method: 'POST',
+        body: createParams({ key: TRANSLATER_API_KEY, text, lang }),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        }
+    })
+        .then(response => response.json())
+        .then(json => ({
+            lang,
+            input: text,
+            output: json
+        }));
 
-    return apiCall({
-        url: TRANSLATER_ENDPOINT,
-        fetchParams: {
-            method: 'POST',
-            body: createParams(requestParams),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            }
-        },
-        text,
-        lang
-    });
-};
-
-export const fetchAvaliableLanguages = () => {
-    const requestParams = { key: TRANSLATER_API_KEY, ui: 'en' };
-
-    return fetch(`${AVALIABLE_LANGUAGES_ENDPOINT}?${createParams(requestParams)}`).then(
-        response => response.json()
-    );
-};
-
-export const fetchAvaliableDicionaryPairs = () => {
-    const requestParams = { key: DICTIONARY_API_KEY };
-
-    return fetch(
-        `${AVALIABLE_LANGUAGES_PAIRS_ENDPOINT}?${createParams(requestParams)}`
+export const fetchAvaliableLanguages = () =>
+    fetch(
+        url(AVALIABLE_LANGUAGES_ENDPOINT, { key: TRANSLATER_API_KEY, ui: 'en' })
     ).then(response => response.json());
-};
+
+export const fetchAvaliableDicionaryPairs = () =>
+    fetch(
+        url(AVALIABLE_LANGUAGES_PAIRS_ENDPOINT, { key: DICTIONARY_API_KEY })
+    ).then(response => response.json());

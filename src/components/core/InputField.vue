@@ -26,6 +26,7 @@
 
                 this.$store.dispatch(TRY_TO_LOAD_EXISTING_TRANSLATION_ACTION);
             },
+
             onEnterPress() {
                 if (this.$store.getters.isTranslationRequired)
                     this.$store.dispatch(TRANSLATE_ACTION);
